@@ -1,0 +1,40 @@
+@media (min-width:700px) {
+  .my-button {
+    width: auto !important;
+  }
+}
+
+.my-button {
+  margin: 10px auto !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.head{
+  text-align: center;
+    
+}
+.button-sorgu{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.button-qr {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.button-group > .my-button {
+  flex: 1 0 auto;
+  margin: 5px !important;
+}
