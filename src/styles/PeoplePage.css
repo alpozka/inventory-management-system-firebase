@@ -1,0 +1,14 @@
+.people-grid {
+    padding: 20px;
+  }
+  
+  .person-grid-item-link {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .person-grid-item {
+    padding: 20px;
+    text-align: center;
+  }
+  

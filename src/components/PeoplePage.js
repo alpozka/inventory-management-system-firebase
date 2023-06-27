@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Grid, Paper, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
+import '../styles/PeoplePage.css';
 
 function PeoplePage() {
   const [people, setPeople] = useState([]);
@@ -10,7 +12,7 @@ function PeoplePage() {
     const fetchPeople = async () => {
       const peopleCollection = collection(db, 'people');
       const peopleSnapshot = await getDocs(peopleCollection);
-      const peopleList = peopleSnapshot.docs.map(doc => doc.data());
+      const peopleList = peopleSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setPeople(peopleList);
     };
 
@@ -18,26 +20,19 @@ function PeoplePage() {
   }, []);
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Ad</TableCell>
-            <TableCell>Soyad</TableCell>
-            <TableCell>Ünvan</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {people.map((person, index) => (
-            <TableRow key={index}>
-              <TableCell>{person.name}</TableCell>
-              <TableCell>{person.surname}</TableCell>
-              <TableCell>{person.title}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Grid container spacing={2} className="people-grid">
+      {people.map((person, index) => (
+        <Grid item xs={12} sm={6} md={4} key={index}>
+          <Link to={`/profile/${person.id}`} className="person-grid-item-link">
+            <Paper className="person-grid-item">
+              <Typography variant="h5">{person.name}</Typography>
+              <Typography variant="body2">{person.surname}</Typography>
+              <Typography variant="body2">{person.title}</Typography>
+            </Paper>
+          </Link>
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 

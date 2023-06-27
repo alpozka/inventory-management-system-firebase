@@ -53,15 +53,15 @@ const HomePage = () => {
                 </Box>
 
                 <Box m={2}>
-                    <Link to="/people">  {/* Add this line */}
+                    <Link to="/people">
                         <Button variant="contained" color="secondary" fullWidth className="my-button">Kişiler</Button>
-                    </Link>  {/* Add this line */}
+                    </Link>  
                 </Box>
 
                 <Box m={2}>
-                    <Link to="/products">  {/* Add this line */}
+                    <Link to="/products"> 
                         <Button variant="contained" color="secondary" fullWidth className="my-button">Ürünler</Button>
-                    </Link>  {/* Add this line */}
+                    </Link> 
                 </Box>
             </div>
 

@@ -1,0 +1,27 @@
+.profile-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .profile-container h1,
+  .profile-container p {
+    margin-bottom: 20px;
+  }
+  
+  @media (max-width: 600px) {
+    .profile-container {
+      padding: 10px;
+    }
+  
+    .profile-container h1 {
+      font-size: 24px;
+    }
+  
+    .profile-container p {
+      font-size: 16px;
+    }
+  }
+  
