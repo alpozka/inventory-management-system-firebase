@@ -28,6 +28,7 @@ function PeoplePage() {
               <Typography variant="h5">{person.name}</Typography>
               <Typography variant="body2">{person.surname}</Typography>
               <Typography variant="body2">{person.title}</Typography>
+              <Typography variant="body2">{person.id}</Typography>
             </Paper>
           </Link>
         </Grid>

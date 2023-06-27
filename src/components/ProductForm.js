@@ -9,7 +9,15 @@ import TextField from '@mui/material/TextField';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from './firebase';
 
-const ProductForm = ({ open, handleClose }) => {
+function generateId() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 5; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+  const ProductForm = ({ open, handleClose }) => {
   const [productName, setProductName] = React.useState('');
   const [productDescription, setProductDescription] = React.useState('');
   const [productPrice, setProductPrice] = React.useState('');
@@ -20,10 +28,15 @@ const ProductForm = ({ open, handleClose }) => {
       alert('Please fill out all fields');
       return;
     }
+    
+
+    // Generate a Random ID
+    const id = generateId();
 
     // Add to firebase
     try {
       await addDoc(collection(db, 'products'), {
+        id, // Add the generated ID here
         name: productName,
         description: productDescription,
         price: productPrice

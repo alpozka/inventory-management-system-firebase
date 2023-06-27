@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs} from 'firebase/firestore';
 import { db } from './firebase';
 import { Grid, Paper } from '@mui/material';
 import '../styles/ProductPage.css';
@@ -9,9 +9,12 @@ function ProductPage() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const productsCollection = await getDocs(collection(db, 'products'));
-      setProducts(productsCollection.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      const productsCollection = collection(db, 'products');
+      const productsSnapshot = await getDocs(productsCollection);
+      const productsList = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setProducts(productsList);
     };
+
     fetchProducts();
   }, []);
 
@@ -24,6 +27,7 @@ function ProductPage() {
               <h2>{product.name}</h2>
               <p>{product.description}</p>
               <p>{product.price}</p>
+              <p>ID: {product.id}</p>
             </Paper>
           </Grid>
         ))}

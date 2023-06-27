@@ -9,6 +9,15 @@ import TextField from '@mui/material/TextField';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from './firebase';
 
+function generateId() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 5; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
 const PersonForm = ({ open, handleClose }) => {
   const [name, setName] = React.useState('');
   const [surname, setSurname] = React.useState('');
@@ -21,9 +30,12 @@ const PersonForm = ({ open, handleClose }) => {
       return;
     }
 
+    const id = generateId();
+
     // Add to firebase
     try {
       await addDoc(collection(db, 'people'), {
+        id,
         name,
         surname,
         title

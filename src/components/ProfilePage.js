@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from './firebase';
 import '../styles/PeoplePage.css';
 
 function ProfilePage() {
   const { id } = useParams();
-  const [person, setPerson] = useState(null);  // Add this line
+  const [person, setPerson] = useState(null);
 
   useEffect(() => {
     const fetchPerson = async () => {
-      const personDoc = doc(db, 'people', id);
-      const personSnapshot = await getDoc(personDoc);
-      if (personSnapshot.exists()) {
-        setPerson(personSnapshot.data());
-      } else {
-        console.log('No such person!');
-      }
+      const peopleCollection = collection(db, 'people');
+      const q = query(peopleCollection, where("id", "==", id));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        setPerson(doc.data());
+      });
     };
 
     fetchPerson();
@@ -31,7 +31,7 @@ function ProfilePage() {
       <h1>İsim: {person.name}</h1>
       <p>Soyad: {person.surname}</p>
       <p>Ünvan: {person.title}</p>
-      <p>ID: {id}</p>
+      <p>ID: {person.id}</p>
     </div>
   );
 }
