@@ -22,28 +22,39 @@ const PersonForm = ({ open, handleClose }) => {
   const [name, setName] = React.useState('');
   const [surname, setSurname] = React.useState('');
   const [title, setTitle] = React.useState('');
+  const [joiningDate, setJoiningDate] = React.useState('');
+  const [registrationDate, setRegistrationDate] = React.useState(new Date().toISOString().split('T')[0]);
+  const [assignedDeviceOrSoftwareId, setAssignedDeviceOrSoftwareId] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [hasError, setHasError] = React.useState(false);
 
   const handleAdd = async () => {
-    // Validation
-    if (name === '' || surname === '' || title === '') {
-      alert('Please fill out all fields');
+    if (name === '' || surname === '' || title === '' || registrationDate === '') {
+      setHasError(true);
       return;
     }
+    setHasError(false);
 
     const id = generateId();
 
-    // Add to firebase
     try {
       await addDoc(collection(db, 'people'), {
         id,
         name,
         surname,
-        title
+        title,
+        joiningDate,
+        registrationDate,
+        assignedDeviceOrSoftwareId,
+        description
       });
-      // Reset the fields and close the dialog
       setName('');
       setSurname('');
       setTitle('');
+      setJoiningDate('');
+      setRegistrationDate(new Date().toISOString().split('T')[0]);
+      setAssignedDeviceOrSoftwareId('');
+      setDescription('');
       handleClose();
       alert('Kayıt başarılı');
     } catch (error) {
@@ -57,11 +68,15 @@ const PersonForm = ({ open, handleClose }) => {
         <DialogTitle>Kişi Ekle</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Lütfen kişi bilgilerini aşağıya girin.
+            Lütfen kişi bilgilerini aşağıya girin. (*) işaretli alanlar zorunludur.
           </DialogContentText>
-          <TextField autoFocus margin="dense" id="name" label="Ad" type="text" fullWidth value={name} onChange={e => setName(e.target.value)} />
-          <TextField margin="dense" id="surname" label="Soyad" type="text" fullWidth value={surname} onChange={e => setSurname(e.target.value)} />
-          <TextField margin="dense" id="title" label="Ünvan" type="text" fullWidth value={title} onChange={e => setTitle(e.target.value)} />
+          <TextField autoFocus margin="dense" id="name" label="Ad *" type="text" fullWidth value={name} onChange={e => setName(e.target.value)} error={hasError && name === ''} helperText={hasError && name === '' && "Bu alanın doldurulması zorunludur."}/>
+          <TextField margin="dense" id="surname" label="Soyad *" type="text" fullWidth value={surname} onChange={e => setSurname(e.target.value)} error={hasError && surname === ''} helperText={hasError && surname === '' && "Bu alanın doldurulması zorunludur."}/>
+          <TextField margin="dense" id="title" label="Ünvan *" type="text" fullWidth value={title} onChange={e => setTitle(e.target.value)} error={hasError && title === ''} helperText={hasError && title === '' && "Bu alanın doldurulması zorunludur."}/>
+          <TextField margin="dense" id="joiningDate" label="İşe Giriş Tarihi" type="date" fullWidth value={joiningDate} onChange={e => setJoiningDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+          <TextField margin="dense" id="registrationDate" label="Sisteme Kayıt Tarihi *" type="date" fullWidth value={registrationDate} onChange={e => setRegistrationDate(e.target.value)} InputLabelProps={{ shrink: true }} error={hasError && registrationDate === ''} helperText={hasError && registrationDate === '' && "Bu alanın doldurulması zorunludur."}/>
+          <TextField margin="dense" id="assignedDeviceOrSoftwareId" label="Atanan Cihaz veya Yazılım IDsi" type="text" fullWidth value={assignedDeviceOrSoftwareId} onChange={e => setAssignedDeviceOrSoftwareId(e.target.value)} />
+          <TextField margin="dense" id="description" label="Açıklama" type="text" fullWidth value={description} onChange={e => setDescription(e.target.value)} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>İptal</Button>

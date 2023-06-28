@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from './firebase';
-import '../styles/PeoplePage.css';
+import '../styles/ProfilePage.css';
 
 function ProfilePage() {
   const { id } = useParams();
@@ -28,12 +28,19 @@ function ProfilePage() {
 
   return (
     <div className="profile-container">
-      <h1>İsim: {person.name}</h1>
+      <h2>Kişi</h2>
+      <p>Ad: {person.name}</p>
       <p>Soyad: {person.surname}</p>
       <p>Ünvan: {person.title}</p>
+      <p>İşe giriş tarihi: {person.joiningDate}</p>
+      <p>Sisteme Kayıt Tarihi: {person.registrationDate}</p>
+      <p>Atanan Ürün Id: {person.assignedDeviceOrSoftwareId}</p>
+      <p>Açıklama: {person.description}</p>
       <p>ID: {person.id}</p>
     </div>
   );
 }
 
 export default ProfilePage;
+
+

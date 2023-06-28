@@ -3,6 +3,7 @@ import { collection, getDocs} from 'firebase/firestore';
 import { db } from './firebase';
 import { Grid, Paper } from '@mui/material';
 import '../styles/ProductPage.css';
+import { Link } from 'react-router-dom';
 
 function ProductPage() {
   const [products, setProducts] = useState([]);
@@ -23,12 +24,14 @@ function ProductPage() {
       <Grid container spacing={3}>
         {products.map((product) => (
           <Grid item xs={12} sm={6} md={4} key={product.id}>
+            <Link to={`/ProductProfile/${product.id}`} className="productCardLink">
             <Paper className="productCard">
               <h2>{product.name}</h2>
               <p>{product.description}</p>
               <p>{product.price}</p>
               <p>ID: {product.id}</p>
             </Paper>
+            </Link>
           </Grid>
         ))}
       </Grid>

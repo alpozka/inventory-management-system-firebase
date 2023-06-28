@@ -4,6 +4,7 @@ import HomePage from './components/HomePage';
 import PeoplePage from './components/PeoplePage';
 import ProfilePage from './components/ProfilePage';
 import ProductPage from './components/ProductPage';
+import ProductProfile from './components/ProductProfile';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
             <Route path="/people" element={<PeoplePage />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
             <Route path="/products" element={<ProductPage />} />
+            <Route path="/ProductProfile/:id" element={<ProductProfile />} />
         </Routes>
   </Router>
   );
