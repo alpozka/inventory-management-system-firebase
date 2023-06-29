@@ -95,6 +95,12 @@ const HomePage = () => {
                     onChange={e => setSearchId(e.target.value)} 
                     error={!!error}
                     helperText={error}
+                    onKeyPress={(event) => {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            handleSearch();
+                        }
+                    }}
                 />    
             </Box>
             <div className="button-sorgu">
