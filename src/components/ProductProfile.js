@@ -16,7 +16,7 @@ function ProductProfile() {
       querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
         setProduct(doc.data());
-      });
+      }); 
     };
 
     fetchProduct();
