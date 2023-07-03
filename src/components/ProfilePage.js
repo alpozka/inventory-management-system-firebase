@@ -142,7 +142,7 @@ function ProfilePage() {
   />
   <TextField 
     margin="dense" 
-    name="assignedDevice ID" 
+    name="assignedDeviceOrSoftwareId" 
     label="Atanan Cihaz veya Yazılım ID" 
     value={editedPerson.assignedDeviceOrSoftwareId} 
     onChange={handlePersonChange} 
