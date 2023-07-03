@@ -43,6 +43,11 @@ function ProfilePage() {
   };
 
   const handleUpdatePerson = async () => {
+    if (!editedPerson.name.trim() || !editedPerson.surname.trim() || !editedPerson.title.trim()) {
+      alert("İsim, Soyisim ve Unvan alanları boş bırakılamaz!");
+      return;
+    }
+  
     if (docId) {
       const docRef = doc(db, 'people', docId);
       await updateDoc(docRef, editedPerson);
