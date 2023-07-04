@@ -3,12 +3,15 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // useHistory yerine useNavigate kullanılıyor.
 import { collection, query, orderBy, startAt, endAt, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 import '../styles/HomePage.css';
 import PersonForm from './PersonForm'; 
 import ProductForm from './ProductForm';
+import { QrReader } from 'react-qr-reader'; // 'QrReader' doğru bir şekilde içe aktarıldı.
+
+
 
 const HomePage = () => {
     const [openPersonForm, setOpenPersonForm] = useState(false); 
@@ -16,6 +19,8 @@ const HomePage = () => {
     const [searchId, setSearchId] = useState('');
     const [searchResult, setSearchResult] = useState([]);
     const [error, setError] = useState(null);
+    const [openQR, setOpenQR] = useState(false); // QR kod okuyucusunun durumunu kontrol eder
+    const navigate = useNavigate(); // useHistory yerine useNavigate kullanılıyor.
 
     const handleOpenPersonForm = () => {
         setOpenPersonForm(true);
@@ -32,6 +37,26 @@ const HomePage = () => {
     const handleCloseProductForm = () => {
         setOpenProductForm(false);
     };
+
+    const handleScan = data => {
+        if (data) {
+            navigate(`/products/${data}`); // useHistory yerine useNavigate kullanılıyor.
+            setOpenQR(false);
+        }
+    }
+
+    const handleError = err => {
+        console.error(err);
+    }
+
+    const handleOpenQRReader = () => {
+        setOpenQR(true);
+    }
+
+    const handleCloseQRReader = () => {
+        setOpenQR(false);
+    }
+
 
     const handleSearch = async () => {
         if (searchId.length < 2) {
@@ -171,12 +196,26 @@ const HomePage = () => {
         
             <div className="button-qr">
                 <Box m={2}>
-                    <Button variant="contained" color="secondary" fullWidth className="my-button">QR Kodu Okut</Button>
+                <Button variant="contained" color="secondary" fullWidth className="my-button" onClick={handleOpenQRReader}>QR Kodu Okut</Button>
                 </Box>
             </div>
         
             <PersonForm open={openPersonForm} handleClose={handleClosePersonForm} />  
             <ProductForm open={openProductForm} handleClose={handleCloseProductForm} />
+            {openQR && (
+            <div>
+                <QrReader
+                    delay={300}
+                    onError={handleError}
+                    onScan={handleScan}
+                    style={{ width: '100%' }}
+                />
+                <Button onClick={handleCloseQRReader}>Close QR Reader</Button>
+                <Button variant="contained" color="primary" onClick={handleOpenQRReader}>
+  QR Kod Okuyucuyu Aç
+</Button>
+            </div>
+        )}
         </Container>
     );
     

@@ -4,6 +4,7 @@ import { collection, doc, deleteDoc, getDocs, query, updateDoc, where } from 'fi
 import { db } from './firebase';
 import { Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
 import '../styles/ProductProfile.css';
+import  QRCode  from 'react-qr-code';
 
 function ProductProfile() {
   const { id } = useParams();
@@ -11,6 +12,7 @@ function ProductProfile() {
   const [docId, setDocId] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editedProduct, setEditedProduct] = useState({});
+  const [qrDialogOpen, setQRDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -63,9 +65,16 @@ function ProductProfile() {
       if (docId) {
         const docRef = doc(db, 'products', docId);
         await deleteDoc(docRef);
-        // Optionally, redirect or update UI here
       }
     }
+  };
+
+  const handleOpenQRDialog = () => {
+    setQRDialogOpen(true);
+  };
+
+  const handleCloseQRDialog = () => {
+    setQRDialogOpen(false);
   };
 
   if (!product) {
@@ -85,6 +94,7 @@ function ProductProfile() {
       <p>ID: {product.id}</p>
       <Button onClick={handleOpenEditDialog}>Düzenle</Button>
       <Button onClick={handleDeleteProduct}>Ürünü Sil</Button>
+      <Button onClick={handleOpenQRDialog}>QR Kodu Göster</Button>
   
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
         <DialogTitle>Ürün Bilgilerini Düzenle</DialogTitle>
@@ -160,6 +170,15 @@ function ProductProfile() {
           <Button onClick={handleUpdateProduct}>Kaydet</Button>
         </DialogActions>
       </Dialog>
+      <Dialog open={qrDialogOpen} onClose={handleCloseQRDialog}>
+      <DialogTitle>Ürün QR Kodu</DialogTitle>
+      <DialogContent>
+        <QRCode value={product.id} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseQRDialog}>Kapat</Button>
+      </DialogActions>
+    </Dialog>
     </div>
   );
 }
