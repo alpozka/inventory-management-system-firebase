@@ -26,9 +26,10 @@ function ProductPage() {
           <Grid item xs={12} sm={6} md={4} key={product.id}>
             <Link to={`/ProductProfile/${product.id}`} className="productCardLink">
             <Paper className="productCard">
-              <h2>{product.name}</h2>
+              <h2>{product.brand}</h2>
+              <p>{product.model}</p>
               <p>{product.description}</p>
-              <p>{product.price}</p>
+              <p>Atanan kişi ID:  {product.assignedPersonId}</p>
               <p>ID: {product.id}</p>
             </Paper>
             </Link>
