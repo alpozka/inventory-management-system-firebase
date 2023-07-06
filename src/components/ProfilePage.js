@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { collection, doc, deleteDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db } from './firebase';
 import { Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
@@ -11,6 +11,7 @@ function ProfilePage() {
   const [docId, setDocId] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editedPerson, setEditedPerson] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPerson = async () => {
@@ -70,9 +71,14 @@ function ProfilePage() {
       if (docId) {
         const docRef = doc(db, 'people', docId);
         await deleteDoc(docRef);
-        // Optionally, redirect or update UI here
+        alert('Silme işlemi başarıyla tamamlandı.');
+        navigate("/home");
       }
     }
+  };
+
+  const goToHomePage = () => {
+    navigate("/home");
   };
 
   if (!person) {
@@ -92,7 +98,8 @@ function ProfilePage() {
       <p>ID: {person.id}</p>
       <Button onClick={handleOpenEditDialog}>Düzenle</Button>
       <Button onClick={handleDeletePerson}>Kişiyi Sil</Button>
-  
+      <Button onClick={goToHomePage}>Anasayfa</Button>
+
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
         <DialogTitle>Kişi Bilgilerini Düzenle</DialogTitle>
         <DialogContent>

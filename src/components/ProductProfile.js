@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { collection, doc, deleteDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db } from './firebase';
 import { Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
@@ -11,6 +11,7 @@ function ProductProfile() {
   const [docId, setDocId] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editedProduct, setEditedProduct] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -65,12 +66,18 @@ function ProductProfile() {
   };
 
   const handleDeleteProduct = async () => {
-    if(window.confirm('Are you sure you want to delete this product?')) {
+    if(window.confirm('Bu ürünü silmek istediğinize emin misiniz?')) {
       if (docId) {
         const docRef = doc(db, 'products', docId);
         await deleteDoc(docRef);
+        alert('Silme işlemi başarıyla tamamlandı.');
+        navigate("/home");
       }
     }
+  };
+
+  const goToHomePage = () => {
+    navigate("/home");
   };
 
   if (!product) {
@@ -90,7 +97,8 @@ function ProductProfile() {
       <p>ID: {product.id}</p>
       <Button onClick={handleOpenEditDialog}>Düzenle</Button>
       <Button onClick={handleDeleteProduct}>Ürünü Sil</Button>
-  
+      <Button onClick={goToHomePage}>Anasayfa</Button>
+
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
         <DialogTitle>Ürün Bilgilerini Düzenle</DialogTitle>
         <DialogContent>
@@ -141,8 +149,7 @@ function ProductProfile() {
             fullWidth 
           />
           <TextField 
-            margin="dense" 
-            name="registerDate" 
+            margin="dense"            name="registerDate" 
             label="Kayıt Tarihi" 
             type="date" 
             value={editedProduct.registerDate} 
