@@ -49,12 +49,15 @@ const ProductForm = ({ open, handleClose }) => {
     try {
       await addDoc(collection(db, 'products'), {
         id,
+        idLowerCase: id.toLowerCase(),
         brand: productBrand,
+        brandLowerCase: productBrand.toLowerCase(),
         description: productDescription,
         price: productPrice,
         purchaseDate,
         registerDate,
         model,
+        modelLowerCase: model.toLowerCase(),
         assignedPersonId: isUnassigned ? 'Unassigned' : assignedPersonId
       });
       setProductBrand('');

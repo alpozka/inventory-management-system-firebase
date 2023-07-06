@@ -5,18 +5,36 @@ import PeoplePage from './components/PeoplePage';
 import ProfilePage from './components/ProfilePage';
 import ProductPage from './components/ProductPage';
 import ProductProfile from './components/ProductProfile';
+import LoginPage from './components/LoginPage';
+import { AuthContextProvider } from './context/AuthContext';
+import ResetPassword from './components/ResetPassword';
+import PrivateRoute from './context/PrivateRoute';
 
 function App() {
   return (
-    <Router>
-        <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/people" element={<PeoplePage />} />
-            <Route path="/profile/:id" element={<ProfilePage />} />
-            <Route path="/products" element={<ProductPage />} />
-            <Route path="/ProductProfile/:id" element={<ProductProfile />} />
-        </Routes>
-  </Router>
+    <AuthContextProvider>
+      <Router>
+          <Routes>
+              <Route path="/" element={<LoginPage />} />
+              <Route path="/home" element={<PrivateRoute />} >
+                  <Route index element={<HomePage />} />
+              </Route>
+              <Route path="/people" element={<PrivateRoute />} >
+                  <Route index element={<PeoplePage />} />
+              </Route>
+              <Route path="/profile/:id" element={<PrivateRoute />} >
+                  <Route index element={<ProfilePage />} />
+              </Route>
+              <Route path="/products" element={<PrivateRoute />} >
+                  <Route index element={<ProductPage />} />
+              </Route>
+              <Route path="/ProductProfile/:id" element={<PrivateRoute />} >
+                  <Route index element={<ProductProfile />} />
+              </Route>
+              <Route path="/reset-password" element={<ResetPassword />} />
+          </Routes>
+      </Router>
+    </AuthContextProvider>
   );
 }
 

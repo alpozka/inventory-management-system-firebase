@@ -40,9 +40,13 @@ const PersonForm = ({ open, handleClose }) => {
     try {
       await addDoc(collection(db, 'people'), {
         id,
+        idLowerCase: id.toLowerCase(),
         name,
+        nameLowerCase: name.toLowerCase(),
         surname,
+        surnamenameLowerCase: surname.toLowerCase(),
         title,
+        titleLowerCase: title.toLowerCase(),
         joiningDate,
         registrationDate,
         assignedDeviceOrSoftwareId,

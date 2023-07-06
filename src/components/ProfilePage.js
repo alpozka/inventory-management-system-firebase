@@ -47,11 +47,18 @@ function ProfilePage() {
       alert("İsim, Soyisim ve Unvan alanları boş bırakılamaz!");
       return;
     }
-  
+
+    const updatedPerson = {
+      ...editedPerson,
+      nameLowerCase: editedPerson.name.toLowerCase(),
+      surnameLowerCase: editedPerson.surname.toLowerCase(),
+      titleLowerCase: editedPerson.title.toLowerCase(),
+    };
+
     if (docId) {
       const docRef = doc(db, 'people', docId);
-      await updateDoc(docRef, editedPerson);
-      setPerson(editedPerson);
+      await updateDoc(docRef, updatedPerson);
+      setPerson(updatedPerson);
       setEditDialogOpen(false);
     } else {
       console.log("No document ID found");

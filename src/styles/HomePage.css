@@ -1,6 +1,12 @@
 @media (min-width:700px) {
   .my-button {
-    width: auto !important;
+      width: auto !important;
+  }
+
+  .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
   }
 }
 
@@ -14,12 +20,13 @@
 
 .head{
   text-align: center;
-    
+  
 }
+
 .button-sorgu{
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .button-group {
