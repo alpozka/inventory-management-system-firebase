@@ -1,30 +1,57 @@
-.people-grid {
+.people-page {
   padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+  background-color: #f0f0f0;
+}
+
+.people-grid {
+  margin: 0 auto;
 }
 
 .person-grid-item-link {
   text-decoration: none;
-  color: inherit;
 }
 
-.person-card {
+.person-grid-item {
   padding: 20px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   text-align: center;
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-  transition: 0.3s;
+  border-radius: 15px;
+  overflow: hidden;
+  background-color: #FFFFFF;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+  position: relative;
 }
 
-.person-card:hover {
-  box-shadow: 0 12px 24px 0 rgba(0,0,0,0.2);
+.person-grid-item::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-color: #3f51b5;
+  z-index: -1;
+  transform: rotate(45deg);
+  transition: all 0.5s ease-in-out;
 }
 
-@media (max-width: 600px) {
-  .person-card {
-      padding: 10px;
-  }
+.person-grid-item:hover {
+  color: #FFFFFF;
+  transform: scale(1.05);
+}
+
+.person-grid-item:hover::before {
+  top: -30%;
+  left: -30%;
+}
+
+.person-name {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.person-details {
+  font-weight: lighter;
 }
