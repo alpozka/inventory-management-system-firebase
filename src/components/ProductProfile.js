@@ -11,6 +11,8 @@ function ProductProfile() {
   const [docId, setDocId] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editedProduct, setEditedProduct] = useState({});
+  const [personDialogOpen, setPersonDialogOpen] = useState(false);
+  const [persons, setPersons] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,15 +20,61 @@ function ProductProfile() {
       const productCollection = collection(db, 'products');
       const q = query(productCollection, where("id", "==", id));
       const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        setProduct(doc.data());
-        setEditedProduct(doc.data());
+      if (querySnapshot.empty) {
+        console.log(`No product found with ID: ${id}`);
+        return;
+      }
+      querySnapshot.forEach(async (doc) => {
+        const productData = doc.data();
+        
+        // Atanan kişiye ait bilgileri çekme
+        const personCollection = collection(db, 'people');
+        const personQuery = query(personCollection, where("id", "==", productData.assignedPersonId));
+        const personQuerySnapshot = await getDocs(personQuery);
+        personQuerySnapshot.forEach((personDoc) => {
+          const personData = personDoc.data();
+          productData.assignedPersonName = personData.name;
+          productData.assignedPersonSurname = personData.surname;
+        });
+  
+        setProduct(productData);
+        setEditedProduct(productData);
         setDocId(doc.id);
-      }); 
+      });
     };
-
+  
     fetchProduct();
   }, [id]);
+  
+
+  
+  
+  
+  
+
+  const fetchPersons = async () => {
+    const personCollection = collection(db, 'people');
+    const querySnapshot = await getDocs(personCollection);
+    const persons = [];
+    querySnapshot.forEach((doc) => {
+      persons.push(doc.data());
+    });
+    setPersons(persons);
+  };
+
+  useEffect(() => {
+    fetchPersons();
+  }, []);
+
+  const handleAssignPerson = (id, name, surname) => {
+    setEditedProduct({
+      ...editedProduct,
+      assignedPersonId: id,
+      assignedPersonName: `${name} ${surname}` // isim ve soyisim bilgilerini birleştiriyoruz
+    });
+    setPersonDialogOpen(false);
+  };
+  
 
   const handleOpenEditDialog = () => {
     setEditDialogOpen(true);
@@ -53,6 +101,7 @@ function ProductProfile() {
       ...editedProduct,
       brandLowerCase: editedProduct.brand.toLowerCase(),
       modelLowerCase: editedProduct.model.toLowerCase(),
+      assignedPersonName: editedProduct.assignedPersonName,
     };
 
     if (docId) {
@@ -93,7 +142,7 @@ function ProductProfile() {
       <p>Ürün Fiyatı: {product.price}</p>
       <p>Satın Alma Tarihi: {product.purchaseDate}</p>
       <p>Sisteme Kayıt Tarihi: {product.registerDate}</p>
-      <p>Atanan Kişi Id: {product.assignedPersonId}</p>
+      <p>Atanan Kişi: - {product.assignedPersonName} {product.assignedPersonSurname} - ID: ( {product.assignedPersonId} )  </p>
       <p>ID: {product.id}</p>
       <Button onClick={handleOpenEditDialog}>Düzenle</Button>
       <Button onClick={handleDeleteProduct}>Ürünü Sil</Button>
@@ -110,8 +159,6 @@ function ProductProfile() {
             value={editedProduct.brand} 
             onChange={handleProductChange} 
             fullWidth 
-            error={!editedProduct.brand.trim()}
-            helperText={!editedProduct.brand.trim() && "Marka alanı boş bırakılamaz."}
           />
           <TextField 
             margin="dense" 
@@ -120,8 +167,6 @@ function ProductProfile() {
             value={editedProduct.model} 
             onChange={handleProductChange} 
             fullWidth 
-            error={!editedProduct.model.trim()}
-            helperText={!editedProduct.model.trim() && "Model alanı boş bırakılamaz."}
           />
           <TextField 
             margin="dense" 
@@ -143,19 +188,19 @@ function ProductProfile() {
             margin="dense" 
             name="purchaseDate" 
             label="Satın Alma Tarihi" 
-            type="date" 
             value={editedProduct.purchaseDate} 
             onChange={handleProductChange} 
             fullWidth 
           />
           <TextField 
-            margin="dense"            name="registerDate" 
-            label="Kayıt Tarihi" 
-            type="date" 
+            margin="dense" 
+            name="registerDate" 
+            label="Sisteme Kayıt Tarihi" 
             value={editedProduct.registerDate} 
             onChange={handleProductChange} 
             fullWidth 
           />
+          <Button onClick={() => setPersonDialogOpen(true)}>Kişi Seç</Button>
           <TextField 
             margin="dense" 
             name="assignedPersonId" 
@@ -164,10 +209,30 @@ function ProductProfile() {
             onChange={handleProductChange} 
             fullWidth 
           />
+          <TextField 
+            margin="dense" 
+            name="id" 
+            label="ID" 
+            value={editedProduct.id} 
+            onChange={handleProductChange} 
+            fullWidth 
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseEditDialog}>Vazgeç</Button>
-          <Button onClick={handleUpdateProduct}>Kaydet</Button>
+          <Button onClick={handleCloseEditDialog}>İptal</Button>
+          <Button onClick={handleUpdateProduct}>Güncelle</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={personDialogOpen} onClose={() => setPersonDialogOpen(false)}>
+        <DialogTitle>Kişi Ata</DialogTitle>
+        <DialogContent>
+        {persons.map(person => (
+  <Button onClick={() => handleAssignPerson(person.id, person.name, person.surname)}>{person.name} {person.surname}</Button> // isim ve soyisim bilgilerini gönderiyoruz
+))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPersonDialogOpen(false)}>İptal</Button>
         </DialogActions>
       </Dialog>
     </div>

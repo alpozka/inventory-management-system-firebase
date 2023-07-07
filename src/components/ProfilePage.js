@@ -10,7 +10,9 @@ function ProfilePage() {
   const [person, setPerson] = useState(null);
   const [docId, setDocId] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editedPerson, setEditedPerson] = useState({});
+  const [editedPerson, setEditedPerson] = useState({assignedDeviceOrSoftwareId: []});
+  const [productDialogOpen, setProductDialogOpen] = useState(false);
+  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +30,31 @@ function ProfilePage() {
     fetchPerson();
   }, [id]);
 
+  const fetchProducts = async () => {
+    const productCollection = collection(db, 'products');
+    const querySnapshot = await getDocs(productCollection);
+    const products = [];
+    querySnapshot.forEach((doc) => {
+      products.push(doc.data());
+    });
+    setProducts(products);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const handleAssignProduct = (id) => {
+    setEditedPerson((prevPerson) => {
+      const updatedAssignedDevices = [...prevPerson.assignedDeviceOrSoftwareId, id];
+      return {
+        ...prevPerson,
+        assignedDeviceOrSoftwareId: updatedAssignedDevices,
+      };
+    });
+    setProductDialogOpen(false);
+  };
+
   const handleOpenEditDialog = () => {
     setEditDialogOpen(true);
   };
@@ -37,11 +64,12 @@ function ProfilePage() {
   };
 
   const handlePersonChange = (e) => {
+    const value = e.target.name === "assignedDeviceOrSoftwareId" ? e.target.value.split(',').map(item => item.trim()) : e.target.value;
     setEditedPerson({
       ...editedPerson,
-      [e.target.name]: e.target.value
+      [e.target.name]: value
     });
-  };
+  }; 
 
   const handleUpdatePerson = async () => {
     if (!editedPerson.name.trim() || !editedPerson.surname.trim() || !editedPerson.title.trim()) {
@@ -67,7 +95,7 @@ function ProfilePage() {
   };
 
   const handleDeletePerson = async () => {
-    if(window.confirm('Are you sure you want to delete this person?')) {
+    if (window.confirm('Are you sure you want to delete this person?')) {
       if (docId) {
         const docRef = doc(db, 'people', docId);
         await deleteDoc(docRef);
@@ -82,7 +110,7 @@ function ProfilePage() {
   };
 
   if (!person) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   return (
@@ -93,7 +121,23 @@ function ProfilePage() {
       <p>Ünvan: {person.title}</p>
       <p>İşe giriş tarihi: {person.joiningDate}</p>
       <p>Sisteme Kayıt Tarihi: {person.registrationDate}</p>
-      <p>Atanan Ürün Id: {person.assignedDeviceOrSoftwareId}</p>
+      {/* <p>Atanan Ürün Id: {person.assignedDeviceOrSoftwareId.join(', ')}</p> */}
+      <p>Atanan Ürünler:</p>
+<ul>
+  {person.assignedDeviceOrSoftwareId.map(id => {
+    const product = products.find(product => product.id === id);
+    if (product) {
+      return (
+        <li key={id}>
+          <p>ID: {id}</p>
+          <p>Marka: {product.brand}</p>
+          <p>Model: {product.model}</p>
+        </li>
+      );
+    }
+    return null;
+  })}
+</ul>
       <p>Açıklama: {person.description}</p>
       <p>ID: {person.id}</p>
       <Button onClick={handleOpenEditDialog}>Düzenle</Button>
@@ -103,78 +147,90 @@ function ProfilePage() {
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
         <DialogTitle>Kişi Bilgilerini Düzenle</DialogTitle>
         <DialogContent>
-  <TextField 
-    autoFocus 
-    margin="dense" 
-    name="name" 
-    label="Ad" 
-    value={editedPerson.name} 
-    onChange={handlePersonChange} 
-    fullWidth 
-    error={!editedPerson.name.trim()}
-    helperText={!editedPerson.name.trim() && "Ad alanı boş bırakılamaz."}
-  />
-  <TextField 
-    margin="dense" 
-    name="surname" 
-    label="Soyad" 
-    value={editedPerson.surname} 
-    onChange={handlePersonChange} 
-    fullWidth 
-    error={!editedPerson.surname.trim()}
-    helperText={!editedPerson.surname.trim() && "Soyad alanı boş bırakılamaz."}
-  />
-  <TextField 
-    margin="dense" 
-    name="title" 
-    label="Unvan" 
-    value={editedPerson.title} 
-    onChange={handlePersonChange} 
-    fullWidth 
-    error={!editedPerson.title.trim()}
-    helperText={!editedPerson.title.trim() && "Ünvan alanı boş bırakılamaz."}
-  />
-  <TextField 
-    margin="dense" 
-    name="joiningDate" 
-    label="İşe Giriş Tarihi" 
-    type="date" 
-    value={editedPerson.joiningDate} 
-    onChange={handlePersonChange} 
-    fullWidth 
-  />
-  <TextField 
-    margin="dense" 
-    name="registrationDate" 
-    label="Kayıt Tarihi" 
-    type="date"   
-    value={editedPerson.registrationDate} 
-    onChange={handlePersonChange} 
-    fullWidth 
-    error={!editedPerson.registrationDate}
-    helperText={!editedPerson.registrationDate && "Kayıt Tarihi alanı boş bırakılamaz."}
-  />
-  <TextField 
-    margin="dense" 
-    name="assignedDeviceOrSoftwareId" 
-    label="Atanan Cihaz veya Yazılım ID" 
-    value={editedPerson.assignedDeviceOrSoftwareId} 
-    onChange={handlePersonChange} 
-    fullWidth 
-  />
-  <TextField 
-    margin="dense" 
-    name="description" 
-    label="Açıklama" 
-    value={editedPerson.description} 
-    onChange={handlePersonChange} 
-    fullWidth 
-  />
-</DialogContent>
-
+          <TextField
+            autoFocus
+            margin="dense"
+            name="name"
+            label="Ad"
+            value={editedPerson.name}
+            onChange={handlePersonChange}
+            fullWidth
+            error={!editedPerson.name.trim()}
+            helperText={!editedPerson.name.trim() && "Ad alanı boş bırakılamaz."}
+          />
+          <TextField
+            margin="dense"
+            name="surname"
+            label="Soyad"
+            value={editedPerson.surname}
+            onChange={handlePersonChange}
+            fullWidth
+            error={!editedPerson.surname.trim()}
+            helperText={!editedPerson.surname.trim() && "Soyad alanı boş bırakılamaz."}
+          />
+          <TextField
+            margin="dense"
+            name="title"
+            label="Unvan"
+            value={editedPerson.title}
+            onChange={handlePersonChange}
+            fullWidth
+            error={!editedPerson.title.trim()}
+            helperText={!editedPerson.title.trim() && "Ünvan alanı boş bırakılamaz."}
+          />
+          <TextField
+            margin="dense"
+            name="joiningDate"
+            label="İşe Giriş Tarihi"
+            type="date"
+            value={editedPerson.joiningDate}
+            onChange={handlePersonChange}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            name="registrationDate"
+            label="Kayıt Tarihi"
+            type="date"
+            value={editedPerson.registrationDate}
+            onChange={handlePersonChange}
+            fullWidth
+            error={!editedPerson.registrationDate}
+            helperText={!editedPerson.registrationDate && "Kayıt Tarihi alanı boş bırakılamaz."}
+          />
+          <Button onClick={() => setProductDialogOpen(true)}>Ürün Seç</Button>
+          <TextField
+            margin="dense"
+            name="assignedDeviceOrSoftwareId"
+            label="Atanan Ürün ID"
+            value={editedPerson.assignedDeviceOrSoftwareId.join(', ')}
+            onChange={handlePersonChange}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            name="description"
+            label="Açıklama"
+            value={editedPerson.description}
+            onChange={handlePersonChange}
+            fullWidth
+          />
+        </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEditDialog}>Vazgeç</Button>
           <Button onClick={handleUpdatePerson}>Kaydet</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={productDialogOpen} onClose={() => setProductDialogOpen(false)}>
+        <DialogTitle>Ürün Ata</DialogTitle>
+        <DialogContent>
+          {products.map(product => (
+            <Button onClick={() => handleAssignProduct(product.id)}>{product.brand} {product.model}</Button>
+          ))}
+        </DialogContent>
+        <DialogActions>
+
+          <Button onClick={() => setProductDialogOpen(false)}>İptal</Button>
         </DialogActions>
       </Dialog>
     </div>

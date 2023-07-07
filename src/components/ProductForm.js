@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from './firebase';
 
 function generateId() {
@@ -33,6 +33,22 @@ const ProductForm = ({ open, handleClose }) => {
   const [assignedPersonId, setAssignedPersonId] = React.useState('');
   const [isUnassigned, setIsUnassigned] = React.useState(false);
   const [hasError, setHasError] = React.useState(false);
+  const [personDialogOpen, setPersonDialogOpen] = React.useState(false);
+  const [people, setPeople] = React.useState([]);
+
+  const fetchPeople = async () => {
+    const peopleCollection = collection(db, 'people');
+    const querySnapshot = await getDocs(peopleCollection);
+    const people = [];
+    querySnapshot.forEach((doc) => {
+      people.push(doc.data());
+    });
+    setPeople(people);
+  };
+
+  React.useEffect(() => {
+    fetchPeople();
+  }, []);
 
   const handleAdd = async () => {
     // Validation
@@ -73,6 +89,11 @@ const ProductForm = ({ open, handleClose }) => {
     } catch (error) {
       console.error('Error adding document: ', error);
     }
+  };
+
+  const handleAssignPerson = (id) => {
+    setAssignedPersonId(id);
+    setPersonDialogOpen(false);
   };
 
   return (
@@ -127,6 +148,7 @@ const ProductForm = ({ open, handleClose }) => {
             error={hasError && registerDate === ''}
             helperText={hasError && registerDate === '' && "Bu alanın doldurulması zorunludur."}
           />
+          <Button onClick={() => setPersonDialogOpen(true)}>Kişi Seç</Button>
           <TextField 
             margin="dense" 
             id="assignedPersonId" 
@@ -141,25 +163,16 @@ const ProductForm = ({ open, handleClose }) => {
           />
           <FormControlLabel
             control={
-              <Checkbox
-                checked={isUnassigned}
-                onChange={(e) => setIsUnassigned(e.target.checked)}
+              <Checkbox 
+                checked={isUnassigned} 
+                onChange={e => setIsUnassigned(e.target.checked)}
                 name="unassigned"
                 color="primary"
               />
             }
             label="Boşta"
           />
-          <TextField 
-            margin="dense" 
-            id="price" 
-            label="Ürün Fiyatı" 
-            type="text" 
-            fullWidth 
-            value={productPrice} 
-            onChange={e => setProductPrice(e.target.value)} 
-          />
-          <TextField 
+           <TextField 
             margin="dense" 
             id="purchaseDate" 
             label="Satın Alma Tarihi" 
@@ -169,14 +182,36 @@ const ProductForm = ({ open, handleClose }) => {
             onChange={e => setPurchaseDate(e.target.value)}
             InputLabelProps={{ shrink: true }}
           />
+            <TextField 
+            margin="dense" 
+            id="price" 
+            label="Ürün Fiyatı" 
+            type="text" 
+            fullWidth 
+            value={productPrice} 
+            onChange={e => setProductPrice(e.target.value)} 
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>İptal</Button>
           <Button onClick={handleAdd}>Ekle</Button>
         </DialogActions>
       </Dialog>
-    </div>
+
+      {/* This is the new dialog for assigning a person */}
+      <Dialog open={personDialogOpen} onClose={() => setPersonDialogOpen(false)}>
+        <DialogTitle>Kişi Ata</DialogTitle>
+        <DialogContent>
+           {people.map(person => (
+          <Button onClick={() => handleAssignPerson(person.id)}>{person.name} {person.surname}</Button>
+            ))}
+            </DialogContent>
+          <DialogActions>
+          <Button onClick={() => setPersonDialogOpen(false)}>İptal</Button>
+        </DialogActions>
+        </Dialog>
+      </div>
   );
-}
+};
 
 export default ProductForm;

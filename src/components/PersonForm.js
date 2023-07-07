@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from './firebase';
 
 function generateId() {
@@ -24,9 +24,25 @@ const PersonForm = ({ open, handleClose }) => {
   const [title, setTitle] = React.useState('');
   const [joiningDate, setJoiningDate] = React.useState('');
   const [registrationDate, setRegistrationDate] = React.useState(new Date().toISOString().split('T')[0]);
-  const [assignedDeviceOrSoftwareId, setAssignedDeviceOrSoftwareId] = React.useState('');
+  const [assignedDeviceOrSoftwareId, setAssignedDeviceOrSoftwareId] = React.useState([]);
   const [description, setDescription] = React.useState('');
   const [hasError, setHasError] = React.useState(false);
+  const [productDialogOpen, setProductDialogOpen] = React.useState(false);
+  const [products, setProducts] = React.useState([]);
+
+  const fetchProducts = async () => {
+    const productsCollection = collection(db, 'products');
+    const querySnapshot = await getDocs(productsCollection);
+    const products = [];
+    querySnapshot.forEach((doc) => {
+      products.push(doc.data());
+    });
+    setProducts(products);
+  };
+
+  React.useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const handleAdd = async () => {
     if (name === '' || surname === '' || title === '' || registrationDate === '') {
@@ -57,13 +73,18 @@ const PersonForm = ({ open, handleClose }) => {
       setTitle('');
       setJoiningDate('');
       setRegistrationDate(new Date().toISOString().split('T')[0]);
-      setAssignedDeviceOrSoftwareId('');
+      setAssignedDeviceOrSoftwareId([]);
       setDescription('');
       handleClose();
       alert('Kayıt başarılı');
     } catch (error) {
       console.error('Error adding document: ', error);
     }
+  };
+
+  const handleAssignProduct = (id) => {
+    setAssignedDeviceOrSoftwareId(prev => [...prev, id]);
+    setProductDialogOpen(false);
   };
 
   return (
@@ -79,12 +100,34 @@ const PersonForm = ({ open, handleClose }) => {
           <TextField margin="dense" id="title" label="Ünvan *" type="text" fullWidth value={title} onChange={e => setTitle(e.target.value)} error={hasError && title === ''} helperText={hasError && title === '' && "Bu alanın doldurulması zorunludur."}/>
           <TextField margin="dense" id="joiningDate" label="İşe Giriş Tarihi" type="date" fullWidth value={joiningDate} onChange={e => setJoiningDate(e.target.value)} InputLabelProps={{ shrink: true }} />
           <TextField margin="dense" id="registrationDate" label="Sisteme Kayıt Tarihi *" type="date" fullWidth value={registrationDate} onChange={e => setRegistrationDate(e.target.value)} InputLabelProps={{ shrink: true }} error={hasError && registrationDate === ''} helperText={hasError && registrationDate === '' && "Bu alanın doldurulması zorunludur."}/>
-          <TextField margin="dense" id="assignedDeviceOrSoftwareId" label="Atanan Cihaz veya Yazılım IDsi" type="text" fullWidth value={assignedDeviceOrSoftwareId} onChange={e => setAssignedDeviceOrSoftwareId(e.target.value)} />
+          <Button onClick={() => setProductDialogOpen(true)}>Ürün Seç</Button>
+          <TextField
+            margin="dense"
+            id="assignedDeviceOrSoftwareId"
+            label="Atanan Cihaz veya Yazılım IDsi"
+            type="text"
+            fullWidth
+            value={assignedDeviceOrSoftwareId.join(', ')} // Show assigned ids as a comma-separated list
+            onChange={e => setAssignedDeviceOrSoftwareId(e.target.value.split(', '))} // Allow manual entry of ids as a comma-separated list
+          />
           <TextField margin="dense" id="description" label="Açıklama" type="text" fullWidth value={description} onChange={e => setDescription(e.target.value)} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>İptal</Button>
           <Button onClick={handleAdd}>Ekle</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* This is the new dialog for assigning a product */}
+      <Dialog open={productDialogOpen} onClose={() => setProductDialogOpen(false)}>
+        <DialogTitle>Ürün Ata</DialogTitle>
+        <DialogContent>
+          {products.map(product => (
+            <Button key={product.id} onClick={() => handleAssignProduct(product.id)}>{product.brand} {product.model}</Button>
+          ))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setProductDialogOpen(false)}>İptal</Button>
         </DialogActions>
       </Dialog>
     </div>
