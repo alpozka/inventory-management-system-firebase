@@ -30,11 +30,12 @@ const ProductForm = ({ open, handleClose }) => {
   const [purchaseDate, setPurchaseDate] = React.useState('');
   const [registerDate, setRegisterDate] = React.useState(today);
   const [model, setModel] = React.useState('');
-  const [assignedPersonId, setAssignedPersonId] = React.useState('');
+  const [assignedPersonId, setAssignedPersonId] = React.useState([]); //emin değilim
   const [isUnassigned, setIsUnassigned] = React.useState(false);
   const [hasError, setHasError] = React.useState(false);
   const [personDialogOpen, setPersonDialogOpen] = React.useState(false);
   const [people, setPeople] = React.useState([]);
+  
 
   const fetchPeople = async () => {
     const peopleCollection = collection(db, 'people');
@@ -92,9 +93,10 @@ const ProductForm = ({ open, handleClose }) => {
   };
 
   const handleAssignPerson = (id) => {
-    setAssignedPersonId(id);
+    setAssignedPersonId(prev => [...prev, id]);
     setPersonDialogOpen(false);
   };
+  
 
   return (
     <div>
