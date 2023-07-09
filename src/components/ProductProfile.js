@@ -124,13 +124,13 @@ function ProductProfile() {
     }
   };
 
-  const handleDeletePerson = async (personId) => {
-    if (window.confirm('Bu kişiyi silmek istediğinize emin misiniz?')) {
-      const docRef = doc(db, 'people', personId);
-      await deleteDoc(docRef);
-      fetchPersons(); // Kişi silindikten sonra listeyi güncelliyoruz
-    }
-  };
+  // const handleDeletePerson = async (personId) => {
+  //   if (window.confirm('Bu kişiyi silmek istediğinize emin misiniz?')) {
+  //     const docRef = doc(db, 'people', personId);
+  //     await deleteDoc(docRef);
+  //     fetchPersons(); // Kişi silindikten sonra listeyi güncelliyoruz
+  //   }
+  // };
 
   const handleDeleteProduct = async () => {
     if (window.confirm('Bu ürünü silmek istediğinize emin misiniz?')) {
