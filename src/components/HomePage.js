@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from 'react-router-dom';
-import { collection, query, orderBy, startAt, endAt, getDocs, getDoc, doc } from 'firebase/firestore';
+import { collection, query, orderBy, startAt, endAt, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 import '../styles/HomePage.css';
 import PersonForm from './PersonForm';
@@ -206,7 +206,7 @@ const HomePage = () => {
                     <Typography>İşe giriş tarihi: {result.joiningDate}</Typography>
                     <Typography>Sisteme Kayıt Tarihi: {result.registrationDate}</Typography>
                     <Typography>Atanan Ürünler: {result.assignedProducts}</Typography>
-                    <Typography>ID: {result.id}</Typography>
+                    <Typography>ID: <Link to={`/profile/${result.id}`}>{result.id}</Link></Typography>
                   </div>
                 ) : result.type === 'product' ? (
                   <div>
@@ -218,7 +218,7 @@ const HomePage = () => {
                     <Typography>Sisteme Kayıt Tarihi: {result.registerDate}</Typography>
                     <Typography>Fiyat: {result.price}</Typography>
                     <Typography>Atanan Kişi: {result.assignedPersonName}</Typography>
-                    <Typography>ID: {result.id}</Typography>
+                    <Typography>ID: <Link to={`/ProductProfile/${result.id}`}>{result.id}</Link></Typography>
                   </div>
                 ) : (
                   <div>

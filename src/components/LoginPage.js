@@ -113,7 +113,7 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
               {error && <Typography variant="body2" style={{ color: red[500] }}>Hatalı email veya şifre</Typography>}
-              <FormControlLabel
+              {/* <FormControlLabel
                 control={
                   <Checkbox 
                     checked={rememberMe} 
@@ -122,7 +122,7 @@ const Login = () => {
                   />
                 }
                 label="Remember me"
-              />
+              /> */}
               <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Login</Button>
               <Grid container>
                 <Grid item xs>

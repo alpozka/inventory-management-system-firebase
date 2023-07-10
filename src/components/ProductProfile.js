@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { collection, doc, deleteDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db } from './firebase';
+import { Link } from 'react-router-dom';
 import { Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
 import '../styles/ProductProfile.css';
 
@@ -161,18 +162,18 @@ function ProductProfile() {
       <p>Satın Alma Tarihi: {product.purchaseDate}</p>
       <p>Sisteme Kayıt Tarihi: {product.registerDate}</p>
       <p>
-        Atanan Kişi: {(Array.isArray(product.assignedPersonId) ? product.assignedPersonId : [product.assignedPersonId]).map((personId) => {
-          const assignedPerson = persons.find((person) => person.id === personId);
-          return assignedPerson 
-            ? (
-              <>
-                {`${assignedPerson.name} ${assignedPerson.surname} (ID: ${personId})`}
-                {/* <Button onClick={() => handleRemoveAssignedPerson(personId)}>Sil</Button> */}
-              </>
-            ) 
-            : null;
-        })}
-      </p>
+  Atanan Kişi: {(Array.isArray(product.assignedPersonId) ? product.assignedPersonId : [product.assignedPersonId]).map((personId) => {
+    const assignedPerson = persons.find((person) => person.id === personId);
+    return assignedPerson
+      ? (
+        <Link key={personId} to={`/profile/${personId}`}>
+          {`${assignedPerson.name} ${assignedPerson.surname} (ID: ${personId})`}
+        </Link>
+      )
+      : null;
+  })}
+</p>
+
       <p>ID: {product.id}</p>
       <Button onClick={handleOpenEditDialog}>Düzenle</Button>
       <Button onClick={handleDeleteProduct}>Bu Ürünü Sil</Button>

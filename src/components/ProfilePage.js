@@ -4,6 +4,8 @@ import { collection, doc, deleteDoc, getDocs, query, updateDoc, where } from 'fi
 import { db } from './firebase';
 import { Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
 import '../styles/ProfilePage.css';
+import { Link } from 'react-router-dom';
+
 
 function ProfilePage() {
   const { id } = useParams();
@@ -140,7 +142,7 @@ function ProfilePage() {
     if (product) {
       return (
         <li key={id}>
-          <p>ID: {id}</p>
+          <Link to={`/ProductProfile/${id}`}>{id}</Link>
           <p>Marka: {product.brand}</p>
           <p>Model: {product.model}</p>
         </li>
@@ -149,6 +151,7 @@ function ProfilePage() {
     return null;
   })}
 </ul>
+
 <p>Açıklama: {person.description}</p>
       <p>ID: {person.id}</p>
       <Button onClick={handleOpenEditDialog}>Düzenle</Button>
