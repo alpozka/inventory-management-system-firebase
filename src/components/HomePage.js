@@ -160,11 +160,13 @@ const HomePage = () => {
   };
 
   return (
+    <div className="containero">
     <Container>
       <div className="head">
         <h1>Hoşgeldiniz!</h1>
         <p>Bu, Envanter Takip Sistemi'nin ana sayfasıdır.</p>
       </div>
+      
       <Box display="flex" justifyContent="center">
         <TextField
           label="Sorgulama"
@@ -180,8 +182,9 @@ const HomePage = () => {
               handleSearch();
             }
           }}
-        />
+        /> 
       </Box>
+      
       <div className="button-sorgu">
         <Box m={2}>
           <Button variant="contained" color="primary" fullWidth className="my-button" onClick={handleSearch}>Sorgula</Button>
@@ -256,7 +259,10 @@ const HomePage = () => {
 
       <PersonForm open={openPersonForm} handleClose={handleClosePersonForm} />
       <ProductForm open={openProductForm} handleClose={handleCloseProductForm} />
+      
     </Container>
+    </div>
+    
   );
 };
 

@@ -1,9 +1,13 @@
 .profile-container {
-    width: 100%;
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 20px;
-    box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #0d1d31, #0c0d13);
+  overflow: hidden;
+  font-family: 'Roboto', sans-serif;
   }
   
   .profile-container h1,

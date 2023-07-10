@@ -162,40 +162,110 @@ function ProductProfile() {
       <p>Satın Alma Tarihi: {product.purchaseDate}</p>
       <p>Sisteme Kayıt Tarihi: {product.registerDate}</p>
       <p>
-  Atanan Kişi: {(Array.isArray(product.assignedPersonId) ? product.assignedPersonId : [product.assignedPersonId]).map((personId) => {
-    const assignedPerson = persons.find((person) => person.id === personId);
-    return assignedPerson
-      ? (
-        <Link key={personId} to={`/profile/${personId}`}>
-          {`${assignedPerson.name} ${assignedPerson.surname} (ID: ${personId})`}
-        </Link>
-      )
-      : null;
-  })}
-</p>
-
+        Atanan Kişi:{" "}
+        {(Array.isArray(product.assignedPersonId)
+          ? product.assignedPersonId
+          : [product.assignedPersonId]
+        ).map((personId) => {
+          const assignedPerson = persons.find((person) => person.id === personId);
+          return assignedPerson ? (
+            <div key={personId} className="product-card">
+              <span>
+              <Link to={`/profile/${personId}`}> <span>
+                {`${assignedPerson.name} ${assignedPerson.surname}`}
+                </span>
+              </Link>
+              </span>
+              <span>(ID: {personId})</span>
+            </div>
+          ) : null;
+        })}
+      </p>
+  
       <p>ID: {product.id}</p>
-      <Button onClick={handleOpenEditDialog}>Düzenle</Button>
-      <Button onClick={handleDeleteProduct}>Bu Ürünü Sil</Button>
-      <Button onClick={goToHomePage}>Ana Sayfaya Dön</Button>
+      <div className="button-row">
+        <Button onClick={handleOpenEditDialog} className="edit-button">
+          Düzenle
+        </Button>
+        <Button onClick={handleDeleteProduct} className="delete-button">
+          Bu Ürünü Sil
+        </Button>
+        </div>
+        <div className='button-row2'>
+        <Button onClick={goToHomePage} className="return-button">
+          Ana Sayfaya Dön
+        </Button>
+
+        </div>
+       
+      
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
         <DialogTitle>Düzenle</DialogTitle>
         <DialogContent>
-        <TextField autoFocus margin="dense" name="brand" label="Marka" type="text" fullWidth value={editedProduct.brand} onChange={handleProductChange} />
-          <TextField margin="dense" name="model" label="Model" type="text" fullWidth value={editedProduct.model} onChange={handleProductChange} />
-          <TextField margin="dense" name="description" label="Açıklama" type="text" fullWidth value={editedProduct.description} onChange={handleProductChange} />
-          <TextField margin="dense" name="price" label="Fiyat" type="text" fullWidth value={editedProduct.price} onChange={handleProductChange} />
-          <TextField margin="dense" name="purchaseDate" label="Satın Alma Tarihi" type="text" fullWidth value={editedProduct.purchaseDate} onChange={handleProductChange} />
-          <TextField margin="dense" name="registerDate" label="Sisteme Kayıt Tarihi" type="text" fullWidth value={editedProduct.registerDate} onChange={handleProductChange} />
+          <TextField
+            autoFocus
+            margin="dense"
+            name="brand"
+            label="Marka"
+            type="text"
+            fullWidth
+            value={editedProduct.brand}
+            onChange={handleProductChange}
+          />
+          <TextField
+            margin="dense"
+            name="model"
+            label="Model"
+            type="text"
+            fullWidth
+            value={editedProduct.model}
+            onChange={handleProductChange}
+          />
+          <TextField
+            margin="dense"
+            name="description"
+            label="Açıklama"
+            type="text"
+            fullWidth
+            value={editedProduct.description}
+            onChange={handleProductChange}
+          />
+          <TextField
+            margin="dense"
+            name="price"
+            label="Fiyat"
+            type="text"
+            fullWidth
+            value={editedProduct.price}
+            onChange={handleProductChange}
+          />
+          <TextField
+            margin="dense"
+            name="purchaseDate"
+            label="Satın Alma Tarihi"
+            type="text"
+            fullWidth
+            value={editedProduct.purchaseDate}
+            onChange={handleProductChange}
+          />
+          <TextField
+            margin="dense"
+            name="registerDate"
+            label="Sisteme Kayıt Tarihi"
+            type="text"
+            fullWidth
+            value={editedProduct.registerDate}
+            onChange={handleProductChange}
+          />
           <Button onClick={() => setPersonDialogOpen(true)}>Kişi Ata</Button>
           <Button onClick={handleOpenRemoveDialog}>Atanan Kişiyi Sil</Button>
-          <TextField 
-            margin="dense" 
-            name="assignedPersonId" 
-            label="Atanan Kişi ID" 
-            value={editedProduct.assignedPersonId} 
-            onChange={handleProductChange} 
-            fullWidth 
+          <TextField
+            margin="dense"
+            name="assignedPersonId"
+            label="Atanan Kişi ID"
+            value={editedProduct.assignedPersonId}
+            onChange={handleProductChange}
+            fullWidth
           />
         </DialogContent>
         <DialogActions>
@@ -203,35 +273,42 @@ function ProductProfile() {
           <Button onClick={handleUpdateProduct}>Güncelle</Button>
         </DialogActions>
       </Dialog>
-
+  
       <Dialog open={removeDialogOpen} onClose={handleCloseRemoveDialog}>
         <DialogTitle>Atanan Kişiyi Sil</DialogTitle>
         <DialogContent>
-          {(Array.isArray(editedProduct.assignedPersonId) ? editedProduct.assignedPersonId : [editedProduct.assignedPersonId]).map((personId) => {
+          {(Array.isArray(editedProduct.assignedPersonId)
+            ? editedProduct.assignedPersonId
+            : [editedProduct.assignedPersonId]
+          ).map((personId) => {
             const assignedPerson = persons.find((person) => person.id === personId);
-            return assignedPerson 
-              ? (
-                <Button key={personId} onClick={() => handleRemoveAssignedPerson(personId)}>
-                  {`${assignedPerson.name} ${assignedPerson.surname}`}
-                </Button>
-              ) 
-              : null;
+            return assignedPerson ? (
+              <Button
+                key={personId}
+                onClick={() => handleRemoveAssignedPerson(personId)}
+              >
+                {`${assignedPerson.name} ${assignedPerson.surname}`}
+              </Button>
+            ) : null;
           })}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseRemoveDialog}>İptal</Button>
         </DialogActions>
       </Dialog>
-
+  
       <Dialog open={personDialogOpen} onClose={() => setPersonDialogOpen(false)}>
         <DialogTitle>Kişi Ata</DialogTitle>
         <DialogContent>
           {persons.map((person) => (
             <div key={person.id}>
-              <Button onClick={() => handleAssignPerson(person.id, person.name, person.surname)}>
+              <Button
+                onClick={() =>
+                  handleAssignPerson(person.id, person.name, person.surname)
+                }
+              >
                 {`${person.name} ${person.surname}`}
               </Button>
-              {/* <Button onClick={() => handleDeletePerson(person.id)}>Sil</Button> */}
             </div>
           ))}
         </DialogContent>
@@ -241,6 +318,11 @@ function ProductProfile() {
       </Dialog>
     </div>
   );
+  
+  
+  
+
+
 }
 
 export default ProductProfile;

@@ -137,26 +137,31 @@ function ProfilePage() {
       <p>Sisteme Kayıt Tarihi: {person.registrationDate}</p>
       <p>Atanan Ürünler:</p>
       <ul>
+        <div className="person-card">
   {person.assignedDeviceOrSoftwareId.map(id => {
     const product = products.find(product => product.id === id);
     if (product) {
       return (
         <li key={id}>
-          <Link to={`/ProductProfile/${id}`}>{id}</Link>
+          <Link to={`/profile/${id}`}>{id}</Link>
           <p>Marka: {product.brand}</p>
           <p>Model: {product.model}</p>
         </li>
       );
     }
+
     return null;
   })}
+</div>
 </ul>
 
 <p>Açıklama: {person.description}</p>
       <p>ID: {person.id}</p>
+      <div className="button-row">
       <Button onClick={handleOpenEditDialog}>Düzenle</Button>
       <Button onClick={handleDeletePerson}>Kişiyi Sil</Button>
       <Button onClick={goToHomePage}>Anasayfa</Button>
+      </div>
   
         <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
           <DialogTitle>Kişi Düzenle</DialogTitle>
@@ -268,4 +273,3 @@ function ProfilePage() {
   }
   
   export default ProfilePage;
-  
