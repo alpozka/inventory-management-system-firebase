@@ -160,6 +160,7 @@ const HomePage = () => {
   };
 
   return (
+    
     <div className="containero">
     <Container>
       <div className="head">

@@ -129,147 +129,147 @@ function ProfilePage() {
 
   return (
     <div className="profile-container">
-      <h2>Kişi</h2>
-      <p>Ad: {person.name}</p>
-      <p>Soyad: {person.surname}</p>
-      <p>Ünvan: {person.title}</p>
-      <p>İşe giriş tarihi: {person.joiningDate}</p>
-      <p>Sisteme Kayıt Tarihi: {person.registrationDate}</p>
-      <p>Atanan Ürünler:</p>
-      <ul>
-        <div className="person-card">
-  {person.assignedDeviceOrSoftwareId.map(id => {
-    const product = products.find(product => product.id === id);
-    if (product) {
-      return (
-        <li key={id}>
-          <Link to={`/profile/${id}`}>{id}</Link>
-          <p>Marka: {product.brand}</p>
-          <p>Model: {product.model}</p>
-        </li>
+      <div className="person-card">
+        <h2>Kişi</h2>
+        <p>Ad: {person.name}</p>
+        <p>Soyad: {person.surname}</p>
+        <p>Ünvan: {person.title}</p>
+        <p>İşe giriş tarihi: {person.joiningDate}</p>
+        <p>Sisteme Kayıt Tarihi: {person.registrationDate}</p>
+        <p>Atanan Ürünler:</p>
+        <ul>
+          {person.assignedDeviceOrSoftwareId.map(id => {
+            const product = products.find(product => product.id === id);
+            if (product) {
+              return (
+                <li key={id}>
+                  <Link to={`/ProductProfile/${id}`}>{id}</Link>
+                  <p>Marka: {product.brand}</p>
+                  <p>Model: {product.model}</p>
+                </li>
+              );
+            }
+  
+            return null;
+          })}
+        </ul>
+        <p>Açıklama: {person.description}</p>
+        <p>ID: {person.id}</p>
+      </div>
+      <div className="button-group">
+        <Button className="edit-button" onClick={handleOpenEditDialog}>Düzenle</Button>
+        <Button className="delete-button" onClick={handleDeletePerson}>Kişiyi Sil</Button>
+        <Button className="return-button" onClick={goToHomePage}>Anasayfa</Button>
+      </div>
+  
+    
+          <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
+            <DialogTitle>Kişi Düzenle</DialogTitle>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                name="name"
+                label="Ad"
+                value={editedPerson.name}
+                onChange={handlePersonChange}
+                fullWidth
+              />
+              <TextField
+                margin="dense"
+                name="surname"
+                label="Soyad"
+                value={editedPerson.surname}
+                onChange={handlePersonChange}
+                fullWidth
+              />
+              <TextField
+                margin="dense"
+                name="title"
+                label="Unvan"
+                value={editedPerson.title}
+                onChange={handlePersonChange}
+                fullWidth
+              />
+              <TextField
+              margin="dense"
+              name="joiningDate"
+              label="İşe Giriş Tarihi"
+              type="date"
+              value={editedPerson.joiningDate}
+              onChange={handlePersonChange}
+              fullWidth
+            />
+            <TextField
+              margin="dense"
+              name="registrationDate"
+              label="Kayıt Tarihi"
+              type="date"
+              value={editedPerson.registrationDate}
+              onChange={handlePersonChange}
+              fullWidth
+              error={!editedPerson.registrationDate}
+              helperText={!editedPerson.registrationDate && "Kayıt Tarihi alanı boş bırakılamaz."}
+            />
+              <Button onClick={() => setProductDialogOpen(true)}>Atanacak Ürünü Seç</Button>
+              <Button onClick={() => setUnassignProductDialogOpen(true)}>Atanan Ürünü Sil</Button>
+            <TextField
+              margin="dense"
+              name="assignedDeviceOrSoftwareId"
+              label="Atanan Ürün ID"
+              value={editedPerson.assignedDeviceOrSoftwareId.join(', ')}
+              onChange={handlePersonChange}
+              fullWidth
+            />
+            <TextField
+              margin="dense"
+              name="description"
+              label="Açıklama"
+              value={editedPerson.description}
+              onChange={handlePersonChange}
+              fullWidth
+            />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseEditDialog}>İptal</Button>
+              <Button onClick={handleUpdatePerson}>Kaydet</Button>
+            </DialogActions>
+          </Dialog>
+    
+          <Dialog open={productDialogOpen} onClose={() => setProductDialogOpen(false)}>
+            <DialogTitle>Ürün Ata</DialogTitle>
+            <DialogContent>
+              {products.map((product) => (
+                <Button key={product.id} onClick={() => handleAssignProduct(product.id)}>
+                  {product.brand} {product.model}
+                </Button>
+              ))}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setProductDialogOpen(false)}>İptal</Button>
+            </DialogActions>
+          </Dialog>
+    
+          <Dialog open={unassignProductDialogOpen} onClose={() => setUnassignProductDialogOpen(false)}>
+            <DialogTitle>Ürün Sil</DialogTitle>
+            <DialogContent>
+              {editedPerson.assignedDeviceOrSoftwareId.map(id => {
+                const product = products.find(product => product.id === id);
+                if (product) {
+                  return (
+                    <Button key={id} onClick={() => handleUnassignProduct(id)}>{product.brand} {product.model}</Button>
+                  );
+                }
+                return null;
+              })}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setUnassignProductDialogOpen(false)}>İptal</Button>
+            </DialogActions>
+          </Dialog>
+    
+        </div>
       );
-    }
-
-    return null;
-  })}
-</div>
-</ul>
-
-<p>Açıklama: {person.description}</p>
-      <p>ID: {person.id}</p>
-      <div className="button-row">
-      <Button onClick={handleOpenEditDialog}>Düzenle</Button>
-      <Button onClick={handleDeletePerson}>Kişiyi Sil</Button>
-      <Button onClick={goToHomePage}>Anasayfa</Button>
-      </div>
-  
-        <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
-          <DialogTitle>Kişi Düzenle</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="name"
-              label="Ad"
-              value={editedPerson.name}
-              onChange={handlePersonChange}
-              fullWidth
-            />
-            <TextField
-              margin="dense"
-              name="surname"
-              label="Soyad"
-              value={editedPerson.surname}
-              onChange={handlePersonChange}
-              fullWidth
-            />
-            <TextField
-              margin="dense"
-              name="title"
-              label="Unvan"
-              value={editedPerson.title}
-              onChange={handlePersonChange}
-              fullWidth
-            />
-             <TextField
-            margin="dense"
-            name="joiningDate"
-            label="İşe Giriş Tarihi"
-            type="date"
-            value={editedPerson.joiningDate}
-            onChange={handlePersonChange}
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            name="registrationDate"
-            label="Kayıt Tarihi"
-            type="date"
-            value={editedPerson.registrationDate}
-            onChange={handlePersonChange}
-            fullWidth
-            error={!editedPerson.registrationDate}
-            helperText={!editedPerson.registrationDate && "Kayıt Tarihi alanı boş bırakılamaz."}
-          />
-            <Button onClick={() => setProductDialogOpen(true)}>Atanacak Ürünü Seç</Button>
-            <Button onClick={() => setUnassignProductDialogOpen(true)}>Atanan Ürünü Sil</Button>
-          <TextField
-            margin="dense"
-            name="assignedDeviceOrSoftwareId"
-            label="Atanan Ürün ID"
-            value={editedPerson.assignedDeviceOrSoftwareId.join(', ')}
-            onChange={handlePersonChange}
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            name="description"
-            label="Açıklama"
-            value={editedPerson.description}
-            onChange={handlePersonChange}
-            fullWidth
-          />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseEditDialog}>İptal</Button>
-            <Button onClick={handleUpdatePerson}>Kaydet</Button>
-          </DialogActions>
-        </Dialog>
-  
-        <Dialog open={productDialogOpen} onClose={() => setProductDialogOpen(false)}>
-          <DialogTitle>Ürün Ata</DialogTitle>
-          <DialogContent>
-            {products.map((product) => (
-              <Button key={product.id} onClick={() => handleAssignProduct(product.id)}>
-                {product.brand} {product.model}
-              </Button>
-            ))}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setProductDialogOpen(false)}>İptal</Button>
-          </DialogActions>
-        </Dialog>
-  
-        <Dialog open={unassignProductDialogOpen} onClose={() => setUnassignProductDialogOpen(false)}>
-          <DialogTitle>Ürün Sil</DialogTitle>
-          <DialogContent>
-            {editedPerson.assignedDeviceOrSoftwareId.map(id => {
-              const product = products.find(product => product.id === id);
-              if (product) {
-                return (
-                  <Button key={id} onClick={() => handleUnassignProduct(id)}>{product.brand} {product.model}</Button>
-                );
-              }
-              return null;
-            })}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setUnassignProductDialogOpen(false)}>İptal</Button>
-          </DialogActions>
-        </Dialog>
-  
-      </div>
-    );
   }
   
   export default ProfilePage;

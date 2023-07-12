@@ -152,51 +152,52 @@ function ProductProfile() {
     return <div>Loading...</div>;
   }
 
-  return (
-    <div className="product-profile-container">
-      <h2>Ürün</h2>
-      <p>Marka: {product.brand}</p>
-      <p>Model: {product.model}</p>
-      <p>Açıklama: {product.description}</p>
-      <p>Ürün Fiyatı: {product.price}</p>
-      <p>Satın Alma Tarihi: {product.purchaseDate}</p>
-      <p>Sisteme Kayıt Tarihi: {product.registerDate}</p>
-      <p>
-        Atanan Kişi:{" "}
-        {(Array.isArray(product.assignedPersonId)
-          ? product.assignedPersonId
-          : [product.assignedPersonId]
-        ).map((personId) => {
-          const assignedPerson = persons.find((person) => person.id === personId);
-          return assignedPerson ? (
-            <div key={personId} className="product-card">
-              <span>
-              <Link to={`/profile/${personId}`}> <span>
-                {`${assignedPerson.name} ${assignedPerson.surname}`}
-                </span>
-              </Link>
-              </span>
-              <span>(ID: {personId})</span>
-            </div>
-          ) : null;
-        })}
-      </p>
+    return (
+      <div className="profile-container">
+      <div className="product-card">
+        <h2>Ürün</h2>
+        <p>Marka: {product.brand}</p>
+        <p>Model: {product.model}</p>
+        <p>Açıklama: {product.description}</p>
+        <p>Ürün Fiyatı: {product.price}</p>
+        <p>Satın Alma Tarihi: {product.purchaseDate}</p>
+        <p>Sisteme Kayıt Tarihi: {product.registerDate}</p>
   
-      <p>ID: {product.id}</p>
-      <div className="button-row">
+        <div className="assigned-product-card">
+          <h3>Atanan Kişi:</h3>
+          {(Array.isArray(product.assignedPersonId)
+            ? product.assignedPersonId
+            : [product.assignedPersonId]
+          ).map((personId) => {
+            const assignedPerson = persons.find((person) => person.id === personId);
+            return assignedPerson ? (
+              <li key={personId}>
+                <span>
+                <Link to={`/profile/${personId}`}> <span>
+                  {`${assignedPerson.name} ${assignedPerson.surname}`}
+                  </span>
+                </Link>
+                </span>
+                <span>(ID: {personId})</span>
+              </li>
+            ) : null;
+          })}
+        </div>
+  
+        <p>ID: {product.id}</p>
+      </div>
+  
+      <div className="product-button-group">
         <Button onClick={handleOpenEditDialog} className="edit-button">
           Düzenle
         </Button>
         <Button onClick={handleDeleteProduct} className="delete-button">
           Bu Ürünü Sil
         </Button>
-        </div>
-        <div className='button-row2'>
         <Button onClick={goToHomePage} className="return-button">
           Ana Sayfaya Dön
         </Button>
-
-        </div>
+      </div>
        
       
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
@@ -317,7 +318,8 @@ function ProductProfile() {
         </DialogActions>
       </Dialog>
     </div>
-  );
+    );
+  
   
   
   

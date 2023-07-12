@@ -1,12 +1,18 @@
+.full-height {
+  height: 100vh;
+}
+
 .people-page {
   padding: 20px;
   max-width: 100%;
   margin: auto;
   background-color: #f0f0f0;
+  background: linear-gradient(to bottom, #0d1d31, #0c0d13);
 }
 
 .people-grid {
   margin: 0 auto;
+  
 }
 
 .person-grid-item-link {
@@ -18,11 +24,12 @@
   text-align: center;
   border-radius: 15px;
   overflow: hidden;
-  background-color: #FFFFFF;
+  background-color: rgba(227, 0, 0, 0.5); /* Transparan beyaz */
   box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease-in-out;
   position: relative;
 }
+
 
 .person-grid-item::before {
   content: '';

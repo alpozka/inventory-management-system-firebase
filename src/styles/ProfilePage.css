@@ -1,31 +1,406 @@
+/* body{
+  margin: 0; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-family: "Helvetica", "Arial", sans-serif; 
+  font-weight: bold; 
+  background: #060b21;
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: white;
+}
+
+.profile-container{
+  max-width: 800px;
+  margin: 2em auto;
+  background: rgba(0,0,0,0.5);
+  border-radius: 2em;
+  padding: 2em;
+}
+
+.profile-container h2,
+.profile-container p{
+  color: white;
+}
+
+.profile-container ul{
+  list-style: none;
+  padding: 0;
+}
+
+.profile-container li{
+  border: 1px solid #fff;
+  margin-bottom: 1em;
+  padding: 1em;
+  border-radius: 1em;
+}
+
+.profile-container li p{
+  margin: 0;
+}
+
+.profile-container button{
+  background-color: #0d47a1;
+  color: white;
+  border: none;
+  padding: 1em;
+  margin: 1em 0;
+  border-radius: 1em;
+  cursor: pointer;
+}
+
+.profile-container button:hover{
+  background-color: #1a237e;
+}
+
+.profile-container a{
+  color: #0d47a1;
+} */
+/* 
+body {
+  background-color: #060b21;
+  font-family: "Helvetica", "Arial", sans-serif;
+  font-weight: bold;
+  color: white;
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2em;
+  background-color: #1e2740;
+  padding: 2em;
+  margin: 2em;
+  box-shadow: 0 4px 10px rgba(0,0,0,.75), 0 8px 30px rgba(0,0,0,.5);
+}
+
+.profile-container h2 {
+  font-size: 3em;
+  color: #fff;
+}
+
+.profile-container p, .profile-container ul li {
+  color: rgba(255,255,255,0.75);
+  font-size: 1.2rem;
+}
+
+.profile-container ul li {
+  list-style-type: none;
+}
+
+.profile-container ul li p {
+  font-size: 1rem;
+}
+
+.profile-container ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.profile-container button {
+  color: #060b21;
+  background-color: #fff;
+  font-weight: bold;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.profile-container button:hover {
+  background-color: #ddd;
+}
+
+.Dialog {
+  background-color: #1e2740;
+  color: #fff;
+}
+
+.Dialog input {
+  color: #060b21;
+} */
+
+/* en beğendiğim
+html,
+body {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Helvetica", "Arial", sans-serif;
+  font-weight: bold;
+  background: linear-gradient(135deg, #060b21, #04081a);
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 2em;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.75), 0 8px 30px rgba(0, 0, 0, 0.5);
+  padding: 2em;
+  color: white;
+  margin: 2em;
+  max-width: 800px;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1em;
+}
+
+.profile-container p {
+  margin: 0.5em 0;
+}
+
+.profile-container ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.profile-container li {
+  margin-bottom: 1em;
+}
+
+.profile-container a {
+  color: white;
+  text-decoration: none;
+}
+
+.profile-container a:hover {
+  text-decoration: underline;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 1em;
+}
+
+.button-group button {
+  margin: 0 0.5em;
+}
+
+.dialog-title {
+  font-size: 1.5rem;
+  margin-bottom: 1em;
+}
+
+.dialog-content {
+  margin-bottom: 1em;
+}
+
+.dialog-content button {
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.dialog-actions button {
+  margin-left: 0.5em;
+} */
+
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+
 .profile-container {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #0d1d31, #0c0d13);
-  overflow: hidden;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 2em;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 2em;
+  color: white;
+  margin: 2em;
+  max-width: 800px;
   font-family: 'Roboto', sans-serif;
+  background: linear-gradient(to bottom, #0d1d31, #0c0d13);
+  min-height: 100vh;
+}
+
+.profile-container .person-card {
+  background-color: #fff;
+  padding: 2em;
+  border-radius: 2em;
+  color: #333;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  width: 100%;
+}
+
+.profile-container .person-card h2 {
+  font-size: 2rem;
+  margin-bottom: 1em;
+  color: #333;
+}
+
+.profile-container .person-card p {
+  margin: 0.5em 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.profile-container .button-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 2em;
+}
+
+.profile-container .button-group button {
+  margin: 0 0.5em;
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: 'Roboto', sans-serif;
+}
+
+.profile-container .button-group .edit-button {
+  background-color: #ff7f50;
+  color: #fff;
+}
+
+.profile-container .button-group .delete-button {
+  background-color: #dc143c;
+  color: #fff;
+}
+
+.profile-container .button-group .return-button {
+  background-color: #1e90ff;
+  color: #fff;
+}
+
+@media screen and (max-width: 768px) {
+  .profile-container {
+    padding: 1em;
   }
-  
-  .profile-container h1,
-  .profile-container p {
-    margin-bottom: 20px;
+
+  .profile-container .person-card h2 {
+    font-size: 1.5rem;
   }
-  
-  @media (max-width: 600px) {
-    .profile-container {
-      padding: 10px;
-    }
-  
-    .profile-container h1 {
-      font-size: 24px;
-    }
-  
-    .profile-container p {
-      font-size: 16px;
-    }
+
+  .profile-container .person-card p {
+    font-size: 1rem;
   }
-  
+} */
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+
+.profile-container {
+  background: linear-gradient(to bottom, #0d1d31, #0c0d13);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  padding: 10px;
+  color: white;
+}
+
+.person-card {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  padding: 20px;
+  width: 25%;
+  max-height: 70%;
+  overflow: auto;
+  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+  font-weight: 500;
+  margin: 10px auto; /* Adjusts the position a bit more to the top */
+}
+
+.person-card::-webkit-scrollbar {
+  width: 10px;
+}
+
+.person-card::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.person-card::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.person-card::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.person-card h2 {
+  font-size: 1.6em;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.person-card p {
+  font-size: 1.2em;
+  margin: 15px 0;
+}
+
+.person-card ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.person-card ul li {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  margin: 10px 0;
+  padding: 5px; /* Reduced padding to make items in the assigned product list shorter */
+}
+
+.person-card ul li a {
+  color: lightblue;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px; /* Increased distance between the card and the buttons */
+}
+
+.button-group .edit-button,
+.button-group .delete-button,
+.button-group .return-button {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  padding: 10px 20px; /* Adds a bit more padding to the buttons */
+  border-radius: 5px; /* Rounds the corners of the buttons */
+}
+
+@media screen and (max-width: 600px) {
+  .person-card {
+    width: 90%;
+  }
+}
+
+
+
+
+
+
+

@@ -20,7 +20,7 @@ function ProductPage() {
   }, []);
 
   return (
-    <div className="productPage">
+    <div className="product-page full-height">
       <Grid container spacing={3} className='product-grid'>
         {products.map((product) => (
           <Grid item xs={12} sm={6} md={4} key={product.id}>

@@ -20,16 +20,16 @@ function PeoplePage() {
   }, []);
 
   return (
-    <div className="people-page">
-      <Grid container spacing={3} className="people-grid">
+    <div className="product-page full-height">
+      <Grid container spacing={3} className="product-grid">
         {people.map((person, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
-            <Link to={`/profile/${person.id}`} className="person-grid-item-link">
-              <Paper className="person-grid-item">
-                <Typography variant="h5" className="person-name">{person.name}</Typography>
-                <Typography variant="body2" className="person-details">{person.surname}</Typography>
-                <Typography variant="body2" className="person-details">{person.title}</Typography>
-                <Typography variant="body2" className="person-details">{person.id}</Typography>
+            <Link to={`/profile/${person.id}`} className="productCardLink">
+              <Paper className="productCard">
+                <Typography variant="h5" className="product-name">{person.name}</Typography>
+                <Typography variant="body2" className="product-details">{person.surname}</Typography>
+                <Typography variant="body2" className="product-details">{person.title}</Typography>
+                <Typography variant="body2" className="product-details">{person.id}</Typography>
               </Paper>
             </Link>
           </Grid>
@@ -37,6 +37,7 @@ function PeoplePage() {
       </Grid>
     </div>
   );
+
 }
 
 export default PeoplePage;

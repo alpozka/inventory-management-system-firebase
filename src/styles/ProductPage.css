@@ -1,8 +1,12 @@
+.full-height{
+  height: 100vh;
+}
 .productPage {
     padding: 20px;
     max-width: 100%;
     margin: auto;
     background-color: #f0f0f0;
+    background: linear-gradient(to bottom, #0d1d31, #0c0d13);
   }
 
   .productCardLink {
@@ -46,10 +50,10 @@
   .product-name {
     margin-bottom: 10px;
     font-weight: bold;
-    color: #FFFFFF;
   }
   
   .product-details {
     font-weight: lighter;
   }
+
   
