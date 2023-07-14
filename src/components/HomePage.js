@@ -24,6 +24,8 @@ const HomePage = () => {
   const [persons, setPersons] = useState([]);
   const [products, setProducts] = useState([]);
 
+  
+
   const fetchPersons = async () => {
     const personsRef = collection(db, 'people');
     const personsSnapshot = await getDocs(personsRef);

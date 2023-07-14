@@ -1,13 +1,13 @@
 .full-height{
   height: 100vh;
+  background: linear-gradient(to bottom, #0d1d31, #0c0d13);
 }
 .productPage {
     padding: 20px;
     max-width: 100%;
     margin: auto;
     background-color: #f0f0f0;
-    background: linear-gradient(to bottom, #0d1d31, #0c0d13);
-  }
+}
 
   .productCardLink {
     text-decoration: none;
@@ -54,6 +54,23 @@
   
   .product-details {
     font-weight: lighter;
+  }
+  .product-grid {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .back-button {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    margin: 10px;
+    color: #ffffff;
+    z-index: 1000;
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
   }
 
   

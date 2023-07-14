@@ -114,13 +114,13 @@ function ProfilePage() {
         const docRef = doc(db, 'people', docId);
         await deleteDoc(docRef);
         alert('Silme işlemi başarıyla tamamlandı.');
-        navigate("/home");
+        navigate("/");
       }
     }
   };
 
   const goToHomePage = () => {
-    navigate("/home");
+    navigate("/");
   };
 
   if (!person) {

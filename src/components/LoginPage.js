@@ -55,7 +55,7 @@ const Login = () => {
       .then((userCredential) => {
         const user = userCredential.user;
         dispatch({ type: "LOGIN", payload: user });
-        navigate("/home");
+        navigate("/");
       })
       .catch((error) => {
         setError(true);

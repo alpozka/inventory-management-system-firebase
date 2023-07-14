@@ -3,6 +3,8 @@ import { collection, getDocs} from 'firebase/firestore';
 import { db } from './firebase';
 import { Grid, Paper, Typography } from '@mui/material';
 import '../styles/ProductPage.css';
+import { IconButton } from '@mui/material';
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Link } from 'react-router-dom';
 
 function ProductPage() {
@@ -21,6 +23,10 @@ function ProductPage() {
 
   return (
     <div className="product-page full-height">
+      <div style={{ position: 'relative', height: '100%' }}>
+      <IconButton component={Link} to="/" className="back-button" color="primary">
+        <ArrowBackTwoToneIcon />
+      </IconButton>
       <Grid container spacing={3} className='product-grid'>
         {products.map((product) => (
           <Grid item xs={12} sm={6} md={4} key={product.id}>
@@ -35,6 +41,7 @@ function ProductPage() {
           </Grid>
         ))}
       </Grid>
+      </div>
     </div>
   );
 }

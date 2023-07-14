@@ -139,13 +139,13 @@ function ProductProfile() {
         const docRef = doc(db, 'products', docId);
         await deleteDoc(docRef);
         alert('Silme işlemi başarıyla tamamlandı.');
-        navigate("/home");
+        navigate("/");
       }
     }
   };
 
   const goToHomePage = () => {
-    navigate("/home");
+    navigate("/");
   };
 
   if (!product) {
@@ -153,8 +153,8 @@ function ProductProfile() {
   }
 
     return (
-      <div className="profile-container">
-      <div className="product-card">
+      <div className="product-container">
+       <div className="product-card">
         <h2>Ürün</h2>
         <p>Marka: {product.brand}</p>
         <p>Model: {product.model}</p>
@@ -162,9 +162,8 @@ function ProductProfile() {
         <p>Ürün Fiyatı: {product.price}</p>
         <p>Satın Alma Tarihi: {product.purchaseDate}</p>
         <p>Sisteme Kayıt Tarihi: {product.registerDate}</p>
-  
-        <div className="assigned-product-card">
-          <h3>Atanan Kişi:</h3>
+        <p>Atanan Kişi:</p>
+        <ul>
           {(Array.isArray(product.assignedPersonId)
             ? product.assignedPersonId
             : [product.assignedPersonId]
@@ -173,21 +172,20 @@ function ProductProfile() {
             return assignedPerson ? (
               <li key={personId}>
                 <span>
-                <Link to={`/profile/${personId}`}> <span>
-                  {`${assignedPerson.name} ${assignedPerson.surname}`}
+                <Link to={`/profile/${personId}`}>  <span>
+                  {` ${assignedPerson.name} ${assignedPerson.surname}`}
                   </span>
                 </Link>
                 </span>
-                <span>(ID: {personId})</span>
+                <span> ( ID: {personId} )</span>
               </li>
             ) : null;
           })}
-        </div>
-  
+        </ul>
         <p>ID: {product.id}</p>
       </div>
   
-      <div className="product-button-group">
+      <div className="button-group">
         <Button onClick={handleOpenEditDialog} className="edit-button">
           Düzenle
         </Button>
@@ -319,12 +317,6 @@ function ProductProfile() {
       </Dialog>
     </div>
     );
-  
-  
-  
-  
-
-
 }
 
 export default ProductProfile;
