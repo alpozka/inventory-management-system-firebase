@@ -1,0 +1,30 @@
+{
+    "homepage": {
+      "welcome": "Welcome!",
+      "welcomeDescription": "This is the main page of the Inventory Tracking System.",
+      "searchLabel": "Search",
+      "searchButton": "Search",
+      "addPersonButton": "Add Person",
+      "addProductButton": "Add Product",
+      "peopleButton": "People",
+      "productsButton": "Products"
+    },
+    "peoplePage": {
+      "print": "Print",
+      "dialogTitle": "Print People",
+      "backButton": "Back",
+      "selectAllButton": "Select All",
+      "onlyPrintIDsLabel": "Print only IDs",
+      "fontSizeLabel": "Font Size",
+      "printDialogButton": "Print"
+    },
+    "productPage": {
+        "backButton": "Back",
+        "printButton": "Print",
+        "dialogTitle": "Print Products",
+        "selectAllButton": "Select All",
+        "onlyPrintIDsLabel": "Print only IDs",
+        "fontSizeLabel": "Font Size",
+        "printDialogButton": "Print"
+      }
+  }

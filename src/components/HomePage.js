@@ -13,6 +13,7 @@ import ProductForm from './ProductForm';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import { useTranslation } from 'react-i18next';
 
 const HomePage = () => {
   const [openPersonForm, setOpenPersonForm] = useState(false);
@@ -23,9 +24,13 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [persons, setPersons] = useState([]);
   const [products, setProducts] = useState([]);
+  const { t, i18n } = useTranslation();
 
-  
 
+
+  const changeLanguage = (language) => {
+    i18n.changeLanguage(language);
+  };
   const fetchPersons = async () => {
     const personsRef = collection(db, 'people');
     const personsSnapshot = await getDocs(personsRef);
@@ -165,14 +170,18 @@ const HomePage = () => {
     
     <div className="containero">
     <Container>
+      <div className="language-button">
+      <Button onClick={() => changeLanguage('en')}>EN</Button>
+      <Button onClick={() => changeLanguage('tr')}>TR</Button>
+        </div>
       <div className="head">
-        <h1>Hoşgeldiniz!</h1>
-        <p>Bu, Envanter Takip Sistemi'nin ana sayfasıdır.</p>
+        <h1>{t('homepage.welcome')}</h1>
+        <p>{t('homepage.welcomeDescription')}</p>
       </div>
       
       <Box display="flex" justifyContent="center">
         <TextField
-          label="Sorgulama"
+          label={t('homepage.searchLabel')}
           variant="outlined"
           style={{ width: '70%' }}
           value={searchId}
@@ -190,7 +199,7 @@ const HomePage = () => {
       
       <div className="button-sorgu">
         <Box m={2}>
-          <Button variant="contained" color="primary" fullWidth className="my-button" onClick={handleSearch}>Sorgula</Button>
+        <Button variant="contained" color="primary" fullWidth className="my-button" onClick={handleSearch}>{t('homepage.searchButton')}</Button>
         </Box>
       </div>
 
@@ -240,29 +249,28 @@ const HomePage = () => {
 
       <div className="button-group">
         <Box m={2}>
-          <Button variant="contained" color="secondary" fullWidth className="my-button" onClick={handleOpenPersonForm}>Kişi Ekle</Button>
+        <Button variant="contained" color="secondary" fullWidth className="my-button" onClick={handleOpenPersonForm}>{t('homepage.addPersonButton')}</Button>
         </Box>
 
         <Box m={2}>
-          <Button variant="contained" color="secondary" fullWidth className="my-button" onClick={handleOpenProductForm}>Ürün Ekle</Button>
+        <Button variant="contained" color="secondary" fullWidth className="my-button" onClick={handleOpenProductForm}>{t('homepage.addProductButton')}</Button>
         </Box>
 
         <Box m={2}>
           <Link to="/people">
-            <Button variant="contained" color="secondary" fullWidth className="my-button">Kişiler</Button>
+          <Button variant="contained" color="secondary" fullWidth className="my-button">{t('homepage.peopleButton')}</Button>
           </Link>
         </Box>
 
         <Box m={2}>
           <Link to="/products">
-            <Button variant="contained" color="secondary" fullWidth className="my-button">Ürünler</Button>
+          <Button variant="contained" color="secondary" fullWidth className="my-button">{t('homepage.productsButton')}</Button>
           </Link>
         </Box>
       </div>
 
       <PersonForm open={openPersonForm} handleClose={handleClosePersonForm} />
       <ProductForm open={openProductForm} handleClose={handleCloseProductForm} />
-      
     </Container>
     </div>
     

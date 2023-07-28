@@ -5,6 +5,7 @@ import { Grid, Paper, Typography, Dialog, DialogTitle, DialogContent, Checkbox, 
 import { Link } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import { useTranslation } from 'react-i18next';
 import '../styles/PeoplePage.css';
 
 function PeoplePage() {
@@ -13,6 +14,7 @@ function PeoplePage() {
   const [selectedPeople, setSelectedPeople] = useState([]);
   const [onlyIds, setOnlyIds] = useState(false);
   const [fontSize, setFontSize] = useState(12);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchPeople = async () => {
@@ -52,7 +54,7 @@ function PeoplePage() {
       <IconButton component={Link} to="/" className="back-button" color="primary">
         <ArrowBackTwoToneIcon />
       </IconButton>
-      <Button style={{position: 'absolute', top: 5, right: 20}} variant="outlined" onClick={() => setPrintDialogOpen(true)}>Yazdır</Button>
+      <Button style={{position: 'absolute', top: 5, right: 20}} variant="outlined" onClick={() => setPrintDialogOpen(true)}>{t('peoplePage.print')}</Button>
       <Grid container spacing={3} className="people-grid">
         {people.map((person, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
@@ -68,7 +70,7 @@ function PeoplePage() {
         ))}
       </Grid>
       <Dialog open={printDialogOpen} onClose={() => setPrintDialogOpen(false)}>
-        <DialogTitle>Kişileri Yazdır</DialogTitle>
+        <DialogTitle>{t('peoplePage.dialogTitle')}</DialogTitle>
         <DialogContent>
           {people.map((person, index) => (
             <FormControlLabel
@@ -86,7 +88,7 @@ function PeoplePage() {
               key={index}
             />
           ))}
-          <Button variant="outlined" onClick={() => setSelectedPeople(people.map(() => true))}>Hepsini Seç</Button>
+          <Button variant="outlined" onClick={() => setSelectedPeople(people.map(() => true))}>{t('peoplePage.selectAllButton')}</Button>
           <FormControlLabel
             control={
               <Checkbox
@@ -94,15 +96,15 @@ function PeoplePage() {
                 onChange={(event) => setOnlyIds(event.target.checked)}
               />
             }
-            label="Sadece ID'leri yazdır"
+            label={t('peoplePage.onlyPrintIDsLabel')}
           />
           <Box>
-            <Typography variant="body1">Yazı Boyutu: </Typography>
+            <Typography variant="body1">{t('peoplePage.fontSizeLabel')}: </Typography>
             <input type="number" value={fontSize} onChange={(e) => setFontSize(e.target.value)} min={8} max={72} />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handlePrint}>Yazdır</Button>
+          <Button onClick={handlePrint}>{t('peoplePage.printDialogButton')}</Button>
         </DialogActions>
       </Dialog>
       </div>

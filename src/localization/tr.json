@@ -1,0 +1,16 @@
+{
+    "homepage": {
+      "welcome": "Hoşgeldiniz!",
+      "welcomeDescription": "Bu, Envanter Takip Sistemi'nin ana sayfasıdır.",
+      "searchLabel": "Sorgulama",
+      "searchButton": "Sorgula",
+      "addPersonButton": "Kişi Ekle",
+      "addProductButton": "Ürün Ekle",
+      "peopleButton": "Kişiler",
+      "productsButton": "Ürünler"
+    },
+    "peoplePage": {
+        "print": "Yazdır"
+        
+      }
+  }

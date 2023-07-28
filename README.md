@@ -1,2 +1,2 @@
-# inventory-management-system-alp
+# inventory-management-system-firebase
  inventorty management with react

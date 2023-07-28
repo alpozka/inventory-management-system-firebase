@@ -6,6 +6,8 @@ import '../styles/ProductPage.css';
 import { IconButton } from '@mui/material';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+
 
 function ProductPage() {
   const [products, setProducts] = useState([]);
@@ -13,6 +15,8 @@ function ProductPage() {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [onlyIds, setOnlyIds] = useState(false);
   const [fontSize, setFontSize] = useState(12);
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -52,7 +56,7 @@ function ProductPage() {
       <IconButton component={Link} to="/" className="back-button" color="primary">
         <ArrowBackTwoToneIcon />
       </IconButton>
-      <Button style={{position: 'absolute', top: 5, right: 20}} variant="outlined" onClick={() => setPrintDialogOpen(true)}>Yazdır</Button>
+      <Button style={{position: 'absolute', top: 5, right: 20}} variant="outlined" onClick={() => setPrintDialogOpen(true)}>{t('productPage.printButton')}</Button>
       <Grid container spacing={3} className='product-grid'>
         {products.map((product) => (
           <Grid item xs={12} sm={6} md={4} key={product.id}>
@@ -68,7 +72,7 @@ function ProductPage() {
         ))}
       </Grid>
       <Dialog open={printDialogOpen} onClose={() => setPrintDialogOpen(false)}>
-        <DialogTitle>Ürünleri Yazdır</DialogTitle>
+        <DialogTitle>{t('productPage.dialogTitle')}</DialogTitle>
         <DialogContent>
           {products.map((product, index) => (
             <FormControlLabel
@@ -86,7 +90,7 @@ function ProductPage() {
               key={index}
             />
           ))}
-          <Button variant="outlined" onClick={() => setSelectedProducts(products.map(() => true))}>Hepsini Seç</Button>
+          <Button variant="outlined" onClick={() => setSelectedProducts(products.map(() => true))}>{t('productPage.selectAllButton')}</Button>
           <FormControlLabel
             control={
               <Checkbox
@@ -94,15 +98,15 @@ function ProductPage() {
                 onChange={(event) => setOnlyIds(event.target.checked)}
               />
             }
-            label="Sadece ID'leri yazdır"
+            label={t('productPage.onlyPrintIDsLabel')}
           />
           <Box>
-            <Typography variant="body1">Yazı Boyutu: </Typography>
+            <Typography variant="body1">{t('productPage.fontSizeLabel')}: </Typography>
             <input type="number" value={fontSize} onChange={(e) => setFontSize(e.target.value)} min={8} max={72} />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handlePrint}>Yazdır</Button>
+          <Button onClick={handlePrint}>{t('productPage.printButton')}</Button>
         </DialogActions>
       </Dialog>
       </div>
