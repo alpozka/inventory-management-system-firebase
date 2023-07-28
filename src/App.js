@@ -28,7 +28,7 @@ function App() {
                     <Route path="/productprofile/:id" element={<RequireAuth><ProductProfile /></RequireAuth>} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                 </Routes>
-            </BrowserRouter>
+            </BrowserRouter> 
         </AuthContextProvider>
     );
 }

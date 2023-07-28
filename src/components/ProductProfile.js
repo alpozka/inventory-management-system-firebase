@@ -1,81 +1,85 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { collection, doc, deleteDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import React, { useEffect, useState} from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { collection, doc, deleteDoc, getDocs, query, updateDoc, where, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
-import { Link } from 'react-router-dom';
 import { Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
 import '../styles/ProductProfile.css';
 
 function ProductProfile() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [docId, setDocId] = useState(null);
+  const [assignedPersons, setAssignedPersons] = useState([]);
+  const [personData, setPersonData] = useState([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
-  const [editedProduct, setEditedProduct] = useState({ assignedPersonId: [] });
-  const [personDialogOpen, setPersonDialogOpen] = useState(false);
-  const [persons, setPersons] = useState([]);
+  const [editedProduct, setEditedProduct] = useState({});
+  const [assignPersonDialogOpen, setAssignPersonDialogOpen] = useState(false);
+  const [removePersonDialogOpen, setRemovePersonDialogOpen] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState('');
+  const [assignedPersonIds, setAssignedPersonIds] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [docId, setDocId] = useState(null);
+  const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] = useState(false);
   const navigate = useNavigate();
 
-  const fetchProduct = useCallback(async () => {
-    const productCollection = collection(db, 'products');
-    const q = query(productCollection, where('id', '==', id));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      setProduct(doc.data());
-      setDocId(doc.id);
-      const productData = doc.data();
-      setEditedProduct({
-        ...productData,
-        assignedPersonId: Array.isArray(productData.assignedPersonId)
-          ? productData.assignedPersonId
-          : [productData.assignedPersonId],
-      });
-    });
+  const fetchAssignedPersons = async () => {
+    try {
+      const assignmentsDoc = await getDoc(doc(db, 'assignments', id)); 
+      if (assignmentsDoc.exists()) { 
+        const assignedPersonsData = assignmentsDoc.data().assigned || []; 
+        setAssignedPersons(assignedPersonsData); 
+        setAssignedPersonIds(assignedPersonsData); 
+      } else {
+        console.log('Assignments not found for the product'); 
+      }
+    } catch (error) {
+      console.error('Error fetching assigned persons: ', error); 
+    }
+  };
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const productCollection = collection(db, 'products');
+        const q = query(productCollection, where("id", "==", id));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
+          const foundProduct = doc.data();
+          setProduct(foundProduct);
+          setEditedProduct(foundProduct);
+          setDocId(doc.id);
+        } else {
+          setErrorMessage('Product not found');
+        }
+      } catch (error) {
+        console.error('Error fetching product: ', error);
+      }
+    };
+
+    const fetchPersonData = async () => {
+      try {
+        const personsCollection = collection(db, 'people');
+        const querySnapshot = await getDocs(personsCollection);
+        const persons = [];
+        querySnapshot.forEach((doc) => {
+          persons.push({ id: doc.id, ...doc.data() });
+        });
+        setPersonData(persons);
+      } catch (error) {
+        console.error('Error fetching person data: ', error);
+      }
+    };
+
+    fetchProduct();
+    fetchAssignedPersons();
+    fetchPersonData();
   }, [id]);
 
-  useEffect(() => {
-    fetchProduct();
-  }, [fetchProduct]);
 
-  const fetchPersons = async () => {
-    const personCollection = collection(db, 'people');
-    const querySnapshot = await getDocs(personCollection);
-    const persons = [];
-    querySnapshot.forEach((doc) => {
-      persons.push(doc.data());
-    });
-    setPersons(persons);
-  };
-
-  useEffect(() => {
-    fetchPersons();
-  }, []);
-
-  const handleAssignPerson = (id, name, surname) => {
-    setEditedProduct(prevState => ({
-      ...prevState,
-      assignedPersonId: [...prevState.assignedPersonId, id],
-      assignedPersonsName: `${name} ${surname}`
-    }));
-    setPersonDialogOpen(false);
-  };
-
-  const handleRemoveAssignedPerson = (personId) => {
-    setEditedProduct(prevState => ({
-      ...prevState,
-      assignedPersonId: prevState.assignedPersonId.filter(id => id !== personId),
-    }));
-    setRemoveDialogOpen(false);
-  };
-
-  const handleOpenRemoveDialog = () => {
-    setRemoveDialogOpen(true);
-  };
-
-  const handleCloseRemoveDialog = () => {
-    setRemoveDialogOpen(false);
-  };
+  if (!product) {
+    return <div>Loading...</div>;
+  }
 
   const handleOpenEditDialog = () => {
     setEditDialogOpen(true);
@@ -84,77 +88,166 @@ function ProductProfile() {
   const handleCloseEditDialog = () => {
     setEditDialogOpen(false);
   };
+  const handleOpenAssignPersonDialog = () => {
+    setAssignPersonDialogOpen(true);
+  };
+
+  const handleCloseAssignPersonDialog = () => {
+    setAssignPersonDialogOpen(false);
+  };
+
+  // const handleOpenRemovePersonDialog = () => {
+  //   setRemovePersonDialogOpen(true);
+  // };
+
+  const handleCloseRemovePersonDialog = () => {
+    setRemovePersonDialogOpen(false);
+  };
+  const handleOpenDeleteConfirmationDialog = () => {
+    setDeleteConfirmationDialogOpen(true);
+  };
+
+  const handleCloseDeleteConfirmationDialog = () => {
+    setDeleteConfirmationDialogOpen(false);
+  };
 
   const handleProductChange = (e) => {
+    const value = e.target.value;
     setEditedProduct({
       ...editedProduct,
-      [e.target.name]: e.target.value
+      [e.target.name]: value
     });
   };
 
   const handleUpdateProduct = async () => {
-    if (!editedProduct.brand.trim() || !editedProduct.model.trim()) {
-      alert("Marka ve Model alanları boş bırakılamaz!");
+    if (!editedProduct.brand.trim() || !editedProduct.model.trim() || !editedProduct.description.trim()) {
+      alert("Marka, Model ve Açıklama alanları boş bırakılamaz!");
       return;
     }
-  
+
     const updatedProduct = {
       ...editedProduct,
       brandLowerCase: editedProduct.brand.toLowerCase(),
       modelLowerCase: editedProduct.model.toLowerCase(),
-      assignedPersonId: editedProduct.assignedPersonId,
+      registrationDate: editedProduct.registrationDate,
     };
-  
-    if (editedProduct.assignedPersonId.length > 0) {
-      const assignedPersons = editedProduct.assignedPersonId.map((personId) => {
-        const assignedPerson = persons.find((person) => person.id === personId);
-        return assignedPerson ? `${assignedPerson.name} ${assignedPerson.surname}` : null;
-      });
-      updatedProduct.assignedPersonName = assignedPersons.filter((name) => name !== null).join(', ');
-    } else {
-      updatedProduct.assignedPersonName = '';
-    }
-  
-    if (docId) {
-      const docRef = doc(db, 'products', docId);
-      await updateDoc(docRef, updatedProduct);
-      setProduct(updatedProduct);
-      setEditDialogOpen(false);
-    } else {
-      console.log("No document ID found");
+
+    try {
+      if (docId) {
+        const docRef = doc(db, 'products', docId);
+        await updateDoc(docRef, updatedProduct);
+        setProduct(updatedProduct);
+        setEditDialogOpen(false);
+        alert('Değişiklikler kaydedildi.');
+      } else {
+        console.log("No document ID found");
+      }
+    } catch (error) {
+      console.error('Error updating product: ', error);
     }
   };
 
-  // const handleDeletePerson = async (personId) => {
-  //   if (window.confirm('Bu kişiyi silmek istediğinize emin misiniz?')) {
-  //     const docRef = doc(db, 'people', personId);
-  //     await deleteDoc(docRef);
-  //     fetchPersons(); // Kişi silindikten sonra listeyi güncelliyoruz
-  //   }
-  // };
-
   const handleDeleteProduct = async () => {
-    if (window.confirm('Bu ürünü silmek istediğinize emin misiniz?')) {
-      if (docId) {
+    setDeleteConfirmationDialogOpen(false);
+    if (docId) {
+      try {
         const docRef = doc(db, 'products', docId);
         await deleteDoc(docRef);
+  
+        // Deleting the person from assigned list in each product
+        for (const personId of assignedPersonIds) {
+          const assignmentsDoc = await getDoc(doc(db, 'assignments', personId));
+          if (assignmentsDoc.exists()) {
+            const assignedProduct = assignmentsDoc.data().assigned || [];
+            const updatedAssignedProduct = assignedProduct.filter((productId) => productId !== id);
+            await updateDoc(doc(db, 'assignments', personId), { assigned: updatedAssignedProduct });
+          }
+        }
+  
+        // Deleting the person's own assignment document
+        const assignmentsDocRef = doc(db, 'assignments', id);
+        await deleteDoc(assignmentsDocRef);
+  
         alert('Silme işlemi başarıyla tamamlandı.');
         navigate("/");
+      } catch (error) {
+        console.error('Error deleting product: ', error);
       }
     }
   };
 
-  const goToHomePage = () => {
-    navigate("/");
+  const handleAssignPerson = async (personId) => {
+    const updatedAssignedPersons = [...assignedPersonIds, personId];
+  
+    try {
+      const assignmentsDocRef = doc(db, 'assignments', id);
+      await updateDoc(assignmentsDocRef, { assigned: updatedAssignedPersons });
+      setAssignedPersonIds(updatedAssignedPersons);
+      setAssignPersonDialogOpen(false);
+
+      const personAssignmentsDocRef = doc(db, 'assignments', personId);
+      const personAssignmentsDoc = await getDoc(personAssignmentsDocRef);
+      let personAssignedProduct = [];
+      if (personAssignmentsDoc.exists()) {
+        personAssignedProduct = personAssignmentsDoc.data().assigned || [];
+      }
+      personAssignedProduct.push(id); // Add the person to the product's assigned list
+      await updateDoc(personAssignmentsDocRef, { assigned: personAssignedProduct });
+  
+      alert('Kişi başarıyla atandı.');
+      fetchAssignedPersons(); // Fetch the assigned products again after assignment
+    } catch (error) {
+      console.error('Error assigning person: ', error);
+    }
+  };
+  
+
+  const handleRemovePerson = (personId) => {
+    setRemovePersonDialogOpen(true);
+    setSelectedPerson(personId);
   };
 
-  if (!product) {
-    return <div>Loading...</div>;
+  const handleConfirmPersonRemoval = async () => {
+    try {
+      const updatedAssignedPersons = assignedPersonIds.filter((id) => id !== selectedPerson);
+      const assignmentsDocRef = doc(db, 'assignments', id);
+      await updateDoc(assignmentsDocRef, { assigned: updatedAssignedPersons });
+  
+      // Also remove the person ID from the assigned list in the product document in the assignments collection
+      const personAssignmentsDocRef = doc(db, 'assignments', selectedPerson);
+      const personAssignmentsDoc = await getDoc(personAssignmentsDocRef);
+      if (personAssignmentsDoc.exists()) {
+        const assignedProduct = personAssignmentsDoc.data().assigned || [];
+        const updatedAssignedProduct = assignedProduct.filter((productId) => productId !== id);
+        await updateDoc(personAssignmentsDocRef, { assigned: updatedAssignedProduct });
+      }
+  
+      setAssignedPersonIds(updatedAssignedPersons);
+      setSelectedPerson('');
+      setDeleteConfirmationDialogOpen(false);
+      alert('Kişi atanması başarıyla kaldırıldı.');
+      fetchAssignedPersons(); // Fetch the assigned products again after removal
+      window.location.reload();
+    } catch (error) {
+      console.error('Error removing person assignment: ', error);
+    }
+  };
+
+  const goBackToHomePage = () => {
+    navigate("/");
   }
 
-    return (
-      <div className="product-container">
-       <div className="product-card">
+  const getPersonInfo = (personId) => {
+    const person = personData.find((item) => item.id === personId);
+    if (product) {
+      return `${person.name} - ${person.surname} (ID: ${person.id})`;
+    }
+    return '';
+  };
+
+  return (
+    <div className="product-container">
+      <div className="product-card">
         <h2>Ürün</h2>
         <p>Marka: {product.brand}</p>
         <p>Model: {product.model}</p>
@@ -164,40 +257,29 @@ function ProductProfile() {
         <p>Sisteme Kayıt Tarihi: {product.registerDate}</p>
         <p>Atanan Kişi:</p>
         <ul>
-          {(Array.isArray(product.assignedPersonId)
-            ? product.assignedPersonId
-            : [product.assignedPersonId]
-          ).map((personId) => {
-            const assignedPerson = persons.find((person) => person.id === personId);
-            return assignedPerson ? (
-              <li key={personId}>
-                <span>
-                <Link to={`/profile/${personId}`}>  <span>
-                  {` ${assignedPerson.name} ${assignedPerson.surname}`}
-                  </span>
-                </Link>
-                </span>
-                <span> ( ID: {personId} )</span>
-              </li>
-            ) : null;
-          })}
-        </ul>
+        {assignedPersons.map((personId) => (
+          <li key={personId}>
+            <Link to={`/profile/${personId}`}>
+            {getPersonInfo(personId)}
+            </Link>
+            <Button onClick={() => handleRemovePerson(personId)}> Kişiyi Sil</Button>
+          </li>
+        ))}
+      </ul>
         <p>ID: {product.id}</p>
       </div>
-  
       <div className="button-group">
+        <Button onClick={handleOpenAssignPersonDialog}>Kişi Ata</Button>
         <Button onClick={handleOpenEditDialog} className="edit-button">
           Düzenle
         </Button>
-        <Button onClick={handleDeleteProduct} className="delete-button">
+        <Button onClick={handleOpenDeleteConfirmationDialog} className="delete-button">
           Bu Ürünü Sil
         </Button>
-        <Button onClick={goToHomePage} className="return-button">
-          Ana Sayfaya Dön
-        </Button>
-      </div>
-       
-      
+        <Button variant="outlined" color="primary" onClick={goBackToHomePage}>
+        Ana Sayfaya Dön
+      </Button>
+      </div>       
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
         <DialogTitle>Düzenle</DialogTitle>
         <DialogContent>
@@ -232,7 +314,7 @@ function ProductProfile() {
           <TextField
             margin="dense"
             name="price"
-            label="Fiyat"
+            label="Ürün Fiyatı"
             type="text"
             fullWidth
             value={editedProduct.price}
@@ -241,83 +323,81 @@ function ProductProfile() {
           <TextField
             margin="dense"
             name="purchaseDate"
-            label="Satın Alma Tarihi"
-            type="text"
+            label="Satın Alınma Tarihi"
+            type="date"
             fullWidth
             value={editedProduct.purchaseDate}
             onChange={handleProductChange}
+            InputLabelProps={{ shrink: true }}
           />
-          <TextField
-            margin="dense"
-            name="registerDate"
-            label="Sisteme Kayıt Tarihi"
-            type="text"
-            fullWidth
-            value={editedProduct.registerDate}
-            onChange={handleProductChange}
-          />
-          <Button onClick={() => setPersonDialogOpen(true)}>Kişi Ata</Button>
-          <Button onClick={handleOpenRemoveDialog}>Atanan Kişiyi Sil</Button>
-          <TextField
-            margin="dense"
-            name="assignedPersonId"
-            label="Atanan Kişi ID"
-            value={editedProduct.assignedPersonId}
-            onChange={handleProductChange}
-            fullWidth
-          />
+            <TextField
+              margin="dense"
+              name="registerDate"
+              label="Kayıt Tarihi"
+              type="date"
+              fullWidth
+              value={editedProduct.registerDate}
+              onChange={handleProductChange}
+              InputLabelProps={{ shrink: true }}
+            />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseEditDialog}>İptal</Button>
-          <Button onClick={handleUpdateProduct}>Güncelle</Button>
+        <Button onClick={handleCloseEditDialog}>İptal</Button>
+          <Button onClick={handleUpdateProduct}>Kaydet</Button>
         </DialogActions>
       </Dialog>
-  
-      <Dialog open={removeDialogOpen} onClose={handleCloseRemoveDialog}>
-        <DialogTitle>Atanan Kişiyi Sil</DialogTitle>
-        <DialogContent>
-          {(Array.isArray(editedProduct.assignedPersonId)
-            ? editedProduct.assignedPersonId
-            : [editedProduct.assignedPersonId]
-          ).map((personId) => {
-            const assignedPerson = persons.find((person) => person.id === personId);
-            return assignedPerson ? (
-              <Button
-                key={personId}
-                onClick={() => handleRemoveAssignedPerson(personId)}
-              >
-                {`${assignedPerson.name} ${assignedPerson.surname}`}
-              </Button>
-            ) : null;
-          })}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseRemoveDialog}>İptal</Button>
-        </DialogActions>
-      </Dialog>
-  
-      <Dialog open={personDialogOpen} onClose={() => setPersonDialogOpen(false)}>
+       <Dialog open={assignPersonDialogOpen} onClose={handleCloseAssignPersonDialog}>
         <DialogTitle>Kişi Ata</DialogTitle>
         <DialogContent>
-          {persons.map((person) => (
+          {personData.map((person) => (
             <div key={person.id}>
-              <Button
-                onClick={() =>
-                  handleAssignPerson(person.id, person.name, person.surname)
-                }
-              >
-                {`${person.name} ${person.surname}`}
+              <Button onClick={() => handleAssignPerson(person.id)}>
+                {`${person.name} - ${person.surname} (ID: ${person.id})`}
               </Button>
             </div>
           ))}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPersonDialogOpen(false)}>İptal</Button>
+          <Button onClick={handleCloseAssignPersonDialog}>İptal</Button>
         </DialogActions>
       </Dialog>
+      <Dialog open={removePersonDialogOpen} onClose={handleCloseRemovePersonDialog}>
+        <DialogTitle>Atanan Kişiyi Sil</DialogTitle>
+        <DialogContent>
+          {assignedPersons.map((personId) => (
+            <Button key={personId} onClick={() => handleRemovePerson(personId)}>
+              {getPersonInfo(personId)}
+            </Button>
+          ))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseRemovePersonDialog}>İptal</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={deleteConfirmationDialogOpen} onClose={handleCloseDeleteConfirmationDialog}>
+        <DialogTitle>Ürünü Sil</DialogTitle>
+        <DialogContent>
+          <p>Seçilen Ürünü silmek istediğinize emin misiniz?</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteConfirmationDialog}>Hayır</Button>
+          <Button onClick={handleDeleteProduct}>Evet</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={removePersonDialogOpen} onClose={handleCloseRemovePersonDialog}>
+  <DialogTitle>Atanan Kişiyi Sil</DialogTitle>
+  <DialogContent>
+    {assignedPersons.map((personId) => (
+      <Button key={personId} onClick={() => handleConfirmPersonRemoval(personId)}>
+        {getPersonInfo(personId)}
+      </Button>
+    ))}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseRemovePersonDialog}>İptal</Button>
+  </DialogActions>
+</Dialog>
     </div>
-    );
+  );
 }
-
-export default ProductProfile;
-
+export default ProductProfile

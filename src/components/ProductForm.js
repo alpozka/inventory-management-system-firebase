@@ -6,9 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, setDoc, doc, getDocs, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
 function generateId() {
@@ -21,82 +19,109 @@ function generateId() {
 }
 
 const ProductForm = ({ open, handleClose }) => {
-  // Set today's date in the format 'yyyy-MM-dd'
-  const today = new Date().toISOString().slice(0,10);
-
-  const [productBrand, setProductBrand] = React.useState('');
-  const [productDescription, setProductDescription] = React.useState('');
-  const [productPrice, setProductPrice] = React.useState('');
-  const [purchaseDate, setPurchaseDate] = React.useState('');
-  const [registerDate, setRegisterDate] = React.useState(today);
+  const [brand, setBrand] = React.useState('');
   const [model, setModel] = React.useState('');
-  const [assignedPersonId, setAssignedPersonId] = React.useState([]); //emin değilim
-  const [isUnassigned, setIsUnassigned] = React.useState(false);
+  const [description, setDescription] = React.useState('');
+  const [purchaseDate, setPurchaseDate] = React.useState('');
+  const [registrationDate, setRegistrationDate] = React.useState(new Date().toISOString().split('T')[0]);
+  const [assignedPersonId, setAssignedPersonId] = React.useState([]);
+  const [price, setPrice] = React.useState('');
   const [hasError, setHasError] = React.useState(false);
   const [personDialogOpen, setPersonDialogOpen] = React.useState(false);
-  const [people, setPeople] = React.useState([]);
-  
+  const [persons, setPersons] = React.useState([]);
 
-  const fetchPeople = async () => {
-    const peopleCollection = collection(db, 'people');
-    const querySnapshot = await getDocs(peopleCollection);
-    const people = [];
+  const fetchPersons = async () => {
+    const personsCollection = collection(db, 'people');
+    const querySnapshot = await getDocs(personsCollection);
+    const persons = [];
     querySnapshot.forEach((doc) => {
-      people.push(doc.data());
+      persons.push(doc.data());
     });
-    setPeople(people);
+    setPersons(persons);
   };
 
   React.useEffect(() => {
-    fetchPeople();
+    fetchPersons();
   }, []);
 
   const handleAdd = async () => {
-    // Validation
-    if (productBrand === '' || registerDate === '' || model === '' || (!isUnassigned && assignedPersonId === '')) {
+    if (brand === '' || model === '' || description === '') {
       setHasError(true);
       return;
     }
     setHasError(false);
-
-    // Generate a Random ID
+  
     const id = generateId();
-
-    // Add to firebase
+  
     try {
       await addDoc(collection(db, 'products'), {
         id,
         idLowerCase: id.toLowerCase(),
-        brand: productBrand,
-        brandLowerCase: productBrand.toLowerCase(),
-        description: productDescription,
-        price: productPrice,
-        purchaseDate,
-        registerDate,
+        brand,
+        brandLowerCase: brand.toLowerCase(),
         model,
         modelLowerCase: model.toLowerCase(),
-        assignedPersonId: isUnassigned ? 'Unassigned' : assignedPersonId
+        price,
+        purchaseDate,
+        registrationDate,
+        description,
       });
-      setProductBrand('');
-      setProductDescription('');
-      setProductPrice('');
-      setPurchaseDate('');
-      setRegisterDate(today);
+      await setDoc(doc(db, 'assignments', id), {
+        assigned: assignedPersonId,
+      });
+  for (let personId of assignedPersonId) {
+    const personRef = doc(db, 'people', personId);
+    const personDoc = await getDoc(personRef);
+    if (personDoc.exists()) {
+      let assigned = personDoc.data().assigned || [];
+      assigned.push(id); 
+      await updateDoc(personRef, { assigned });
+    } else {
+      console.error(`Person document not found: ${personId}`);
+    }
+    
+    const assignmentRef = doc(db, 'assignments', personId);
+    const assignmentDoc = await getDoc(assignmentRef);
+    if (assignmentDoc.exists()) {
+      let assigned = assignmentDoc.data().assigned || [];
+      if (!assigned.includes(id)) {
+        assigned.push(id); 
+        await updateDoc(assignmentRef, { assigned });
+      }
+    } else {
+      await setDoc(assignmentRef, { assigned: [id] });
+    }
+  }
+  
+      setBrand('');
       setModel('');
-      setAssignedPersonId('');
-      setIsUnassigned(false);
+      setDescription('');
+      setPurchaseDate('');
+      setRegistrationDate(new Date().toISOString().split('T')[0]);
+      setAssignedPersonId([]);
+      setPrice('');
       handleClose();
-      alert('Product added successfully');
+      alert('Ürün başarıyla eklendi');
+      window.location.reload();
     } catch (error) {
       console.error('Error adding document: ', error);
     }
   };
-
-  const handleAssignPerson = (id) => {
-    setAssignedPersonId(prev => [...prev, id]);
-    setPersonDialogOpen(false);
-  };
   
+
+  const handleAssignPerson = async (personId) => {
+    setAssignedPersonId((prev) => [...prev, personId]);
+    setPersonDialogOpen(false);
+    const personRef = doc(db, 'people', personId);
+    const personDoc = await getDoc(personRef);
+    if (personDoc.exists()) {
+      let assigned = personDoc.data().assigned || [];
+      assigned.push(generateId()); 
+      await updateDoc(personRef, { assigned });
+    } else {
+      console.error(`Person document not found: ${personId}`);
+    }
+  };
 
   return (
     <div>
@@ -106,92 +131,20 @@ const ProductForm = ({ open, handleClose }) => {
           <DialogContentText>
             Lütfen ürün bilgilerini aşağıya girin. (*) işaretli alanlar zorunludur.
           </DialogContentText>
-          <TextField 
-            autoFocus 
-            margin="dense" 
-            id="brand" 
-            label="Marka *" 
-            type="text" 
-            fullWidth 
-            value={productBrand} 
-            onChange={e => setProductBrand(e.target.value)}
-            error={hasError && productBrand === ''}
-            helperText={hasError && productBrand === '' && "Bu alanın doldurulması zorunludur."}
-          />
-          <TextField 
-            margin="dense" 
-            id="model" 
-            label="Model *" 
-            type="text" 
-            fullWidth 
-            value={model} 
-            onChange={e => setModel(e.target.value)}
-            error={hasError && model === ''}
-            helperText={hasError && model === '' && "Bu alanın doldurulması zorunludur."}
-          />
-          <TextField 
-            margin="dense" 
-            id="description" 
-            label="Ürün Açıklaması" 
-            type="text" 
-            fullWidth 
-            value={productDescription} 
-            onChange={e => setProductDescription(e.target.value)} 
-          />
-          <TextField 
-            margin="dense" 
-            id="registerDate" 
-            label="Sisteme Kayıt Tarihi *" 
-            type="date" 
-            fullWidth 
-            value={registerDate} 
-            onChange={e => setRegisterDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            error={hasError && registerDate === ''}
-            helperText={hasError && registerDate === '' && "Bu alanın doldurulması zorunludur."}
-          />
+          <TextField autoFocus margin="dense" id="brand" label="Marka *" type="text" fullWidth value={brand} onChange={e => setBrand(e.target.value)} error={hasError && brand === ''} helperText={hasError && brand === '' && "Bu alanın doldurulması zorunludur."}/>
+          <TextField margin="dense" id="model" label="Model *" type="text" fullWidth value={model} onChange={e => setModel(e.target.value)} error={hasError && model === ''} helperText={hasError && model === '' && "Bu alanın doldurulması zorunludur."}/>
+          <TextField margin="dense" id="description" label="Açıklama *" type="text" fullWidth value={description} onChange={e => setDescription(e.target.value)} error={hasError && description === ''} helperText={hasError && description === '' && "Bu alanın doldurulması zorunludur."}/>
+          <TextField margin="dense" id="purchaseDate" label="Satın Alınma Tarihi" type="date" fullWidth value={purchaseDate} onChange={e => setPurchaseDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+          <TextField margin="dense" id="registrationDate" label="Sisteme Kayıt Tarihi *" type="date" fullWidth value={registrationDate} onChange={e => setRegistrationDate(e.target.value)} InputLabelProps={{ shrink: true }} error={hasError && registrationDate === ''} helperText={hasError && registrationDate === '' && "Bu alanın doldurulması zorunludur."}/>
           <Button onClick={() => setPersonDialogOpen(true)}>Kişi Seç</Button>
-          <TextField 
-            margin="dense" 
-            id="assignedPersonId" 
-            label="Atanan Kişi ID *" 
-            type="text" 
-            fullWidth 
-            value={assignedPersonId} 
-            onChange={e => setAssignedPersonId(e.target.value)}
-            disabled={isUnassigned}
-            error={hasError && !isUnassigned && assignedPersonId === ''}
-            helperText={hasError && !isUnassigned && assignedPersonId === '' && "Bu alanın doldurulması zorunludur."}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox 
-                checked={isUnassigned} 
-                onChange={e => setIsUnassigned(e.target.checked)}
-                name="unassigned"
-                color="primary"
-              />
-            }
-            label="Boşta"
-          />
-           <TextField 
-            margin="dense" 
-            id="purchaseDate" 
-            label="Satın Alma Tarihi" 
-            type="date" 
-            fullWidth 
-            value={purchaseDate} 
-            onChange={e => setPurchaseDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
-            <TextField 
-            margin="dense" 
-            id="price" 
-            label="Ürün Fiyatı" 
-            type="text" 
-            fullWidth 
-            value={productPrice} 
-            onChange={e => setProductPrice(e.target.value)} 
+          <TextField
+            margin="dense"
+            id="assignedPersonId"
+            label="Atanan Cihaz veya Yazılım IDsi"
+            type="text"
+            fullWidth
+            value={assignedPersonId.join(', ')} 
+            onChange={e => setAssignedPersonId(e.target.value.split(', '))} // Allow manual entry of ids as a comma-separated list
           />
         </DialogContent>
         <DialogActions>
@@ -199,20 +152,18 @@ const ProductForm = ({ open, handleClose }) => {
           <Button onClick={handleAdd}>Ekle</Button>
         </DialogActions>
       </Dialog>
-
-      {/* This is the new dialog for assigning a person */}
       <Dialog open={personDialogOpen} onClose={() => setPersonDialogOpen(false)}>
         <DialogTitle>Kişi Ata</DialogTitle>
         <DialogContent>
-           {people.map(person => (
-          <Button onClick={() => handleAssignPerson(person.id)}>{person.name} {person.surname}</Button>
-            ))}
-            </DialogContent>
-          <DialogActions>
+          {persons.map(person => (
+            <Button key={person.id} onClick={() => handleAssignPerson(person.id)}>{person.name} {person.surname}</Button>
+          ))}
+        </DialogContent>
+        <DialogActions>
           <Button onClick={() => setPersonDialogOpen(false)}>İptal</Button>
         </DialogActions>
-        </Dialog>
-      </div>
+      </Dialog>
+    </div>
   );
 };
 

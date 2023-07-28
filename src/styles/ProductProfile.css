@@ -25,7 +25,7 @@
   overflow: auto;
   box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
   font-weight: 500;
-  margin: 10px auto; /* Adjusts the position a bit more to the top */
+  margin: 10px auto;
 }
 
 .product-card::-webkit-scrollbar {
@@ -70,7 +70,7 @@
 }
 
 .product-card ul li a {
-  color: lightblue;
+  color: rgb(204, 219, 222);
 }
 @media screen and (max-width: 600px) {
   .product-card {

@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, setDoc, doc, getDocs, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
 function generateId() {
@@ -50,9 +50,9 @@ const PersonForm = ({ open, handleClose }) => {
       return;
     }
     setHasError(false);
-
+  
     const id = generateId();
-
+  
     try {
       await addDoc(collection(db, 'people'), {
         id,
@@ -60,14 +60,47 @@ const PersonForm = ({ open, handleClose }) => {
         name,
         nameLowerCase: name.toLowerCase(),
         surname,
-        surnamenameLowerCase: surname.toLowerCase(),
+        surnameLowerCase: surname.toLowerCase(),
         title,
         titleLowerCase: title.toLowerCase(),
         joiningDate,
         registrationDate,
-        assignedDeviceOrSoftwareId,
-        description
+        description,
       });
+  
+      // Create assignments record for this person
+      await setDoc(doc(db, 'assignments', id), {
+        assigned: assignedDeviceOrSoftwareId,
+      });
+  
+      // Update each assigned product to include the person's ID
+  for (let productId of assignedDeviceOrSoftwareId) {
+    const productRef = doc(db, 'products', productId);
+    const productDoc = await getDoc(productRef);
+    if (productDoc.exists()) {
+      let assigned = productDoc.data().assigned || [];
+      assigned.push(id); 
+      await updateDoc(productRef, { assigned });
+    } else {
+      console.error(`Product document not found: ${productId}`);
+    }
+
+    // Check if an assignment exists for this product
+    const assignmentRef = doc(db, 'assignments', productId);
+    const assignmentDoc = await getDoc(assignmentRef);
+    if (assignmentDoc.exists()) {
+      // If an assignment exists, add the new person to the assigned list
+      let assigned = assignmentDoc.data().assigned || [];
+      if (!assigned.includes(id)) {
+        assigned.push(id); 
+        await updateDoc(assignmentRef, { assigned });
+      }
+    } else {
+      // If no assignment exists, create a new one with the person in the assigned list
+      await setDoc(assignmentRef, { assigned: [id] });
+    }
+  }
+  
       setName('');
       setSurname('');
       setTitle('');
@@ -76,15 +109,28 @@ const PersonForm = ({ open, handleClose }) => {
       setAssignedDeviceOrSoftwareId([]);
       setDescription('');
       handleClose();
-      alert('Kayıt başarılı');
+      alert('Kişi başarıyla eklendi');
+      window.location.reload();
     } catch (error) {
       console.error('Error adding document: ', error);
     }
   };
+  
 
-  const handleAssignProduct = (id) => {
-    setAssignedDeviceOrSoftwareId(prev => [...prev, id]);
+  const handleAssignProduct = async (productId) => {
+    setAssignedDeviceOrSoftwareId((prev) => [...prev, productId]);
     setProductDialogOpen(false);
+  
+    // Ürün belgesini güncelle
+    const productRef = doc(db, 'products', productId);
+    const productDoc = await getDoc(productRef);
+    if (productDoc.exists()) {
+      let assigned = productDoc.data().assigned || [];
+      assigned.push(generateId()); 
+      await updateDoc(productRef, { assigned });
+    } else {
+      console.error(`Product document not found: ${productId}`);
+    }
   };
 
   return (
@@ -117,8 +163,6 @@ const PersonForm = ({ open, handleClose }) => {
           <Button onClick={handleAdd}>Ekle</Button>
         </DialogActions>
       </Dialog>
-
-      {/* This is the new dialog for assigning a product */}
       <Dialog open={productDialogOpen} onClose={() => setProductDialogOpen(false)}>
         <DialogTitle>Ürün Ata</DialogTitle>
         <DialogContent>

@@ -1,12 +1,12 @@
-.full-height{
-  height: 100vh;
+.product-page-full-height{
+  min-height: 100vh;
   background: linear-gradient(to bottom, #0d1d31, #0c0d13);
 }
 .peoplePage {
     padding: 20px;
     max-width: 100%;
     margin: auto;
-    background-color: #f0f0f0;
+    background-color: #f0f0f000;
 }
 
   .peopleCardLink {

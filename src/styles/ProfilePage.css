@@ -374,7 +374,7 @@ h2 {
 }
 
 .person-card ul li a {
-  color: lightblue;
+  color: rgb(204, 219, 222);
 }
 
 .button-group {
@@ -388,8 +388,8 @@ h2 {
 .button-group .return-button {
   font-family: 'Roboto', sans-serif;
   font-weight: 500;
-  padding: 10px 20px; /* Adds a bit more padding to the buttons */
-  border-radius: 5px; /* Rounds the corners of the buttons */
+  padding: 10px 20px;
+  border-radius: 5px;
 }
 
 @media screen and (max-width: 600px) {
