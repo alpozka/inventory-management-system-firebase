@@ -10,8 +10,6 @@ import { red } from '@mui/material/colors';
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 

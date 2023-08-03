@@ -3,7 +3,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 import { Grid, Paper, Typography, Dialog, DialogTitle, DialogContent, Checkbox, Button, FormControlLabel, DialogActions, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { IconButton } from '@mui/material';
+import { IconButton, Snackbar, Alert } from '@mui/material';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { useTranslation } from 'react-i18next';
 import '../styles/PeoplePage.css';
@@ -14,6 +14,9 @@ function PeoplePage() {
   const [selectedPeople, setSelectedPeople] = useState([]);
   const [onlyIds, setOnlyIds] = useState(false);
   const [fontSize, setFontSize] = useState(12);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -44,7 +47,9 @@ function PeoplePage() {
       printWindow.document.close();
       printWindow.print();
     } else {
-      alert("En az bir kişi seçmelisiniz!");
+      setSnackbarMessage(t('peoplePage.mustSelectPerson'));
+      setSnackbarSeverity('warning');
+      setSnackbarOpen(true);
     }
   };
 
@@ -107,8 +112,14 @@ function PeoplePage() {
           <Button onClick={handlePrint}>{t('peoplePage.printDialogButton')}</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar open={snackbarOpen} autoHideDuration={5000} onClose={() => setSnackbarOpen(false)}>
+      <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+        {snackbarMessage}
+      </Alert>
+    </Snackbar>
       </div>
     </div>
+    
   );
 }
 

@@ -8,6 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { collection, addDoc, setDoc, doc, getDocs, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
+import { useTranslation } from 'react-i18next';
 
 function generateId() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -29,6 +30,7 @@ const PersonForm = ({ open, handleClose }) => {
   const [hasError, setHasError] = React.useState(false);
   const [productDialogOpen, setProductDialogOpen] = React.useState(false);
   const [products, setProducts] = React.useState([]);
+  const { t } = useTranslation();
 
   const fetchProducts = async () => {
     const productsCollection = collection(db, 'products');
@@ -109,7 +111,7 @@ const PersonForm = ({ open, handleClose }) => {
       setAssignedDeviceOrSoftwareId([]);
       setDescription('');
       handleClose();
-      alert('Kişi başarıyla eklendi');
+      alert(t('profileForm.assignedSuccessfully'));
       window.location.reload();
     } catch (error) {
       console.error('Error adding document: ', error);
@@ -136,42 +138,42 @@ const PersonForm = ({ open, handleClose }) => {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Kişi Ekle</DialogTitle>
+        <DialogTitle>{t('profileForm.addPerson')}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Lütfen kişi bilgilerini aşağıya girin. (*) işaretli alanlar zorunludur.
+          {t('profileForm.enterPersonDetails')}
           </DialogContentText>
-          <TextField autoFocus margin="dense" id="name" label="Ad *" type="text" fullWidth value={name} onChange={e => setName(e.target.value)} error={hasError && name === ''} helperText={hasError && name === '' && "Bu alanın doldurulması zorunludur."}/>
-          <TextField margin="dense" id="surname" label="Soyad *" type="text" fullWidth value={surname} onChange={e => setSurname(e.target.value)} error={hasError && surname === ''} helperText={hasError && surname === '' && "Bu alanın doldurulması zorunludur."}/>
-          <TextField margin="dense" id="title" label="Ünvan *" type="text" fullWidth value={title} onChange={e => setTitle(e.target.value)} error={hasError && title === ''} helperText={hasError && title === '' && "Bu alanın doldurulması zorunludur."}/>
-          <TextField margin="dense" id="joiningDate" label="İşe Giriş Tarihi" type="date" fullWidth value={joiningDate} onChange={e => setJoiningDate(e.target.value)} InputLabelProps={{ shrink: true }} />
-          <TextField margin="dense" id="registrationDate" label="Sisteme Kayıt Tarihi *" type="date" fullWidth value={registrationDate} onChange={e => setRegistrationDate(e.target.value)} InputLabelProps={{ shrink: true }} error={hasError && registrationDate === ''} helperText={hasError && registrationDate === '' && "Bu alanın doldurulması zorunludur."}/>
-          <Button onClick={() => setProductDialogOpen(true)}>Ürün Seç</Button>
+          <TextField autoFocus margin="dense" id="name" label={t('profileForm.name')} type="text" fullWidth value={name} onChange={e => setName(e.target.value)} error={hasError && name === ''} helperText={hasError && name === '' && "Bu alanın doldurulması zorunludur."}/>
+          <TextField margin="dense" id="surname" label={t('profileForm.surname')} type="text" fullWidth value={surname} onChange={e => setSurname(e.target.value)} error={hasError && surname === ''} helperText={hasError && surname === '' && "Bu alanın doldurulması zorunludur."}/>
+          <TextField margin="dense" id="title" label={t('profileForm.title')} type="text" fullWidth value={title} onChange={e => setTitle(e.target.value)} error={hasError && title === ''} helperText={hasError && title === '' && "Bu alanın doldurulması zorunludur."}/>
+          <TextField margin="dense" id="joiningDate" label={t('profileForm.joiningDate')} type="date" fullWidth value={joiningDate} onChange={e => setJoiningDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+          <TextField margin="dense" id="registrationDate" label={t('profileForm.registrationDate')} type="date" fullWidth value={registrationDate} onChange={e => setRegistrationDate(e.target.value)} InputLabelProps={{ shrink: true }} error={hasError && registrationDate === ''} helperText={hasError && registrationDate === '' && "Bu alanın doldurulması zorunludur."}/>
+          <Button onClick={() => setProductDialogOpen(true)}>{t('profileForm.selectProduct')}</Button>
           <TextField
             margin="dense"
             id="assignedDeviceOrSoftwareId"
-            label="Atanan Cihaz veya Yazılım IDsi"
+            label={t('profileForm.assignedDeviceOrSoftwareId')}
             type="text"
             fullWidth
             value={assignedDeviceOrSoftwareId.join(', ')} // Show assigned ids as a comma-separated list
             onChange={e => setAssignedDeviceOrSoftwareId(e.target.value.split(', '))} // Allow manual entry of ids as a comma-separated list
           />
-          <TextField margin="dense" id="description" label="Açıklama" type="text" fullWidth value={description} onChange={e => setDescription(e.target.value)} />
+          <TextField margin="dense" id="description" label={t('profileForm.description')} type="text" fullWidth value={description} onChange={e => setDescription(e.target.value)} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>İptal</Button>
-          <Button onClick={handleAdd}>Ekle</Button>
+          <Button onClick={handleClose}>{t('profileForm.cancel')}</Button>
+          <Button onClick={handleAdd}>{t('profileForm.add')}</Button>
         </DialogActions>
       </Dialog>
       <Dialog open={productDialogOpen} onClose={() => setProductDialogOpen(false)}>
-        <DialogTitle>Ürün Ata</DialogTitle>
+        <DialogTitle>{t('profileForm.assignProduct')}</DialogTitle>
         <DialogContent>
           {products.map(product => (
             <Button key={product.id} onClick={() => handleAssignProduct(product.id)}>{product.brand} {product.model}</Button>
           ))}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setProductDialogOpen(false)}>İptal</Button>
+          <Button onClick={() => setProductDialogOpen(false)}>{t('profileForm.cancel')}</Button>
         </DialogActions>
       </Dialog>
     </div>

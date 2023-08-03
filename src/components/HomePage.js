@@ -78,10 +78,10 @@ const HomePage = () => {
     // Create empty array to store all results
     const results = [];
 
-    // Define fields to search in 'people' collection
+    // Define fields to search in people collection
     const peopleFieldsToSearch = ['idLowerCase', 'nameLowerCase', 'titleLowerCase', 'surnameLowerCase'];
 
-    // Search in 'people' collection
+    // Search in people collection
     for (let field of peopleFieldsToSearch) {
       const peopleRef = collection(db, 'people');
       const peopleQuery = query(
@@ -117,10 +117,10 @@ const HomePage = () => {
       });
     }
 
-    // Define fields to search in 'products' collection
+    // Define fields to search in products collection
     const productFieldsToSearch = ['idLowerCase', 'brandLowerCase', 'descriptionLowerCase', 'modelLowerCase'];
 
-    // Search in 'products' collection
+    // Search in products collection
     for (let field of productFieldsToSearch) {
       const productRef = collection(db, 'products');
       const productQuery = query(
@@ -214,30 +214,30 @@ const HomePage = () => {
               <CardContent>
                 {result.type === 'person' ? (
                   <div>
-                    <Typography variant="h5" component="div">Kişi</Typography>
-                    <Typography>Ad: {result.name}</Typography>
-                    <Typography>Soyad: {result.surname}</Typography>
-                    <Typography>Ünvan: {result.title}</Typography>
-                    <Typography>İşe giriş tarihi: {result.joiningDate}</Typography>
-                    <Typography>Sisteme Kayıt Tarihi: {result.registrationDate}</Typography>
-                    <Typography>Atanan Ürünler: {result.assignedProducts}</Typography>
+                    <Typography variant="h5" component="div">{t('homepage.person')}</Typography>
+                    <Typography>{t('homepage.name')}: {result.name}</Typography>
+                    <Typography>{t('homepage.surname')}: {result.surname}</Typography>
+                    <Typography>{t('homepage.title')}: {result.title}</Typography>
+                    <Typography>{t('homepage.joiningDate')}: {result.joiningDate}</Typography>
+                    <Typography>{t('homepage.registrationDate')}: {result.registrationDate}</Typography>
+                    <Typography>{t('homepage.assignedProducts')}: {result.assignedProducts}</Typography>
                     <Typography>ID: <Link to={`/profile/${result.id}`}>{result.id}</Link></Typography>
                   </div>
                 ) : result.type === 'product' ? (
                   <div>
-                    <Typography variant="h5" component="div">Ürün</Typography>
-                    <Typography>Marka: {result.brand}</Typography>
-                    <Typography>Model: {result.model}</Typography>
-                    <Typography>Açıklama: {result.description}</Typography>
-                    <Typography>Satın Alınma Tarihi: {result.purchaseDate}</Typography>
-                    <Typography>Sisteme Kayıt Tarihi: {result.registerDate}</Typography>
-                    <Typography>Fiyat: {result.price}</Typography>
-                    <Typography>Atanan Kişi: {result.assignedPersonName}</Typography>
+                    <Typography variant="h5" component="div">{t('homepage.product')}</Typography>
+                    <Typography>{t('homepage.brand')}: {result.brand}</Typography>
+                    <Typography>{t('homepage.model')}: {result.model}</Typography>
+                    <Typography>{t('homepage.description')}: {result.description}</Typography>
+                    <Typography>{t('homepage.purchaseDate')}: {result.purchaseDate}</Typography>
+                    <Typography>{t('homepage.registrationDate')}: {result.registerDate}</Typography>
+                    <Typography>{t('homepage.price')}: {result.price}</Typography>
+                    <Typography>{t('homepage.assignedPerson')}: {result.assignedPersonName}</Typography>
                     <Typography>ID: <Link to={`/ProductProfile/${result.id}`}>{result.id}</Link></Typography>
                   </div>
                 ) : (
                   <div>
-                    <Typography variant="h5" component="div">Bilinmeyen sonuç tipi: {result.type}</Typography>
+                    <Typography variant="h5" component="div">{t('homepage.unknownResultType')}: {result.type}</Typography>
                     <Typography>Data: {JSON.stringify(result, null, 2)}</Typography>
                   </div>
                 )}

@@ -2,8 +2,9 @@ import React, { useEffect, useState} from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { collection, doc, deleteDoc, getDocs, query, updateDoc, where, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
-import { Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Snackbar, Alert } from '@mui/material';
 import '../styles/ProductProfile.css';
+import { useTranslation } from 'react-i18next';
 
 function ProductProfile() {
   const { id } = useParams();
@@ -19,7 +20,16 @@ function ProductProfile() {
   const [errorMessage, setErrorMessage] = useState('');
   const [docId, setDocId] = useState(null);
   const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  
+
+  const changeLanguage = (language) => {
+    i18n.changeLanguage(language);
+  };
 
   const fetchAssignedPersons = async () => {
     try {
@@ -119,9 +129,15 @@ function ProductProfile() {
     });
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   const handleUpdateProduct = async () => {
     if (!editedProduct.brand.trim() || !editedProduct.model.trim() || !editedProduct.description.trim()) {
-      alert("Marka, Model ve Açıklama alanları boş bırakılamaz!");
+      setSnackbarMessage(t('productProfile.fieldsCannotBeEmpty'));
+      setSnackbarSeverity('warning');
+      setSnackbarOpen(true);
       return;
     }
 
@@ -138,7 +154,9 @@ function ProductProfile() {
         await updateDoc(docRef, updatedProduct);
         setProduct(updatedProduct);
         setEditDialogOpen(false);
-        alert('Değişiklikler kaydedildi.');
+        setSnackbarMessage(t('productProfile.changesSaved'));
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
       } else {
         console.log("No document ID found");
       }
@@ -168,7 +186,7 @@ function ProductProfile() {
         const assignmentsDocRef = doc(db, 'assignments', id);
         await deleteDoc(assignmentsDocRef);
   
-        alert('Silme işlemi başarıyla tamamlandı.');
+        alert(t('productProfile.productRemoved'));
         navigate("/");
       } catch (error) {
         console.error('Error deleting product: ', error);
@@ -194,7 +212,9 @@ function ProductProfile() {
       personAssignedProduct.push(id); // Add the person to the product's assigned list
       await updateDoc(personAssignmentsDocRef, { assigned: personAssignedProduct });
   
-      alert('Kişi başarıyla atandı.');
+      setSnackbarMessage(t('productProfile.personAssigned'));
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
       fetchAssignedPersons(); // Fetch the assigned products again after assignment
     } catch (error) {
       console.error('Error assigning person: ', error);
@@ -225,7 +245,7 @@ function ProductProfile() {
       setAssignedPersonIds(updatedAssignedPersons);
       setSelectedPerson('');
       setDeleteConfirmationDialogOpen(false);
-      alert('Kişi atanması başarıyla kaldırıldı.');
+      alert(t('productProfile.personRemoved'));
       fetchAssignedPersons(); // Fetch the assigned products again after removal
       window.location.reload();
     } catch (error) {
@@ -239,55 +259,58 @@ function ProductProfile() {
 
   const getPersonInfo = (personId) => {
     const person = personData.find((item) => item.id === personId);
-    if (product) {
+    if (person && person.name && person.surname && person.id) {
       return `${person.name} - ${person.surname} (ID: ${person.id})`;
     }
     return '';
   };
-
   return (
     <div className="product-container">
+      <div className="language-button">
+      <Button onClick={() => changeLanguage('en')}>EN</Button>
+      <Button onClick={() => changeLanguage('tr')}>TR</Button>
+        </div>
       <div className="product-card">
-        <h2>Ürün</h2>
-        <p>Marka: {product.brand}</p>
-        <p>Model: {product.model}</p>
-        <p>Açıklama: {product.description}</p>
-        <p>Ürün Fiyatı: {product.price}</p>
-        <p>Satın Alma Tarihi: {product.purchaseDate}</p>
-        <p>Sisteme Kayıt Tarihi: {product.registerDate}</p>
-        <p>Atanan Kişi:</p>
+        <h2>{t('productProfile.product')}</h2>
+        <p>{t('productProfile.brand')}: {product.brand}</p>
+        <p>{t('productProfile.model')}: {product.model}</p>
+        <p>{t('productProfile.description')}: {product.description}</p>
+        <p>{t('productProfile.price')}: {product.price}</p>
+        <p>{t('productProfile.purchaseDate')}: {product.purchaseDate}</p>
+        <p>{t('productProfile.registerDate')}: {product.registerDate}</p>
+        <p>{t('productProfile.assignedPerson')}:</p>
         <ul>
         {assignedPersons.map((personId) => (
           <li key={personId}>
             <Link to={`/profile/${personId}`}>
             {getPersonInfo(personId)}
             </Link>
-            <Button onClick={() => handleRemovePerson(personId)}> Kişiyi Sil</Button>
+            <Button onClick={() => handleRemovePerson(personId)}>{t('productProfile.deleteUser')}</Button>
           </li>
         ))}
       </ul>
         <p>ID: {product.id}</p>
       </div>
       <div className="button-group">
-        <Button onClick={handleOpenAssignPersonDialog}>Kişi Ata</Button>
+        <Button onClick={handleOpenAssignPersonDialog}>{t('productProfile.assignedUser')}</Button>
         <Button onClick={handleOpenEditDialog} className="edit-button">
-          Düzenle
+        {t('productProfile.edit')}
         </Button>
         <Button onClick={handleOpenDeleteConfirmationDialog} className="delete-button">
-          Bu Ürünü Sil
+        {t('productProfile.deleteProduct')}
         </Button>
         <Button variant="outlined" color="primary" onClick={goBackToHomePage}>
-        Ana Sayfaya Dön
+        {t('productProfile.mainPage')}
       </Button>
       </div>       
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
-        <DialogTitle>Düzenle</DialogTitle>
+        <DialogTitle>{t('productProfile.edit')}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
             name="brand"
-            label="Marka"
+            label={t('productProfile.brand')}
             type="text"
             fullWidth
             value={editedProduct.brand}
@@ -296,7 +319,7 @@ function ProductProfile() {
           <TextField
             margin="dense"
             name="model"
-            label="Model"
+            label={t('productProfile.model')}
             type="text"
             fullWidth
             value={editedProduct.model}
@@ -305,7 +328,7 @@ function ProductProfile() {
           <TextField
             margin="dense"
             name="description"
-            label="Açıklama"
+            label={t('productProfile.description')}
             type="text"
             fullWidth
             value={editedProduct.description}
@@ -314,7 +337,7 @@ function ProductProfile() {
           <TextField
             margin="dense"
             name="price"
-            label="Ürün Fiyatı"
+            label={t('productProfile.price')}
             type="text"
             fullWidth
             value={editedProduct.price}
@@ -323,7 +346,7 @@ function ProductProfile() {
           <TextField
             margin="dense"
             name="purchaseDate"
-            label="Satın Alınma Tarihi"
+            label={t('productProfile.purchaseDate')}
             type="date"
             fullWidth
             value={editedProduct.purchaseDate}
@@ -333,7 +356,7 @@ function ProductProfile() {
             <TextField
               margin="dense"
               name="registerDate"
-              label="Kayıt Tarihi"
+              label={t('productProfile.registerDate')}
               type="date"
               fullWidth
               value={editedProduct.registerDate}
@@ -342,12 +365,12 @@ function ProductProfile() {
             />
         </DialogContent>
         <DialogActions>
-        <Button onClick={handleCloseEditDialog}>İptal</Button>
-          <Button onClick={handleUpdateProduct}>Kaydet</Button>
+        <Button onClick={handleCloseEditDialog}>{t('productProfile.cancel')}</Button>
+          <Button onClick={handleUpdateProduct}>{t('productProfile.save')}</Button>
         </DialogActions>
       </Dialog>
        <Dialog open={assignPersonDialogOpen} onClose={handleCloseAssignPersonDialog}>
-        <DialogTitle>Kişi Ata</DialogTitle>
+        <DialogTitle>{t('productProfile.assignedUser')}</DialogTitle>
         <DialogContent>
           {personData.map((person) => (
             <div key={person.id}>
@@ -358,11 +381,11 @@ function ProductProfile() {
           ))}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseAssignPersonDialog}>İptal</Button>
+          <Button onClick={handleCloseAssignPersonDialog}>{t('productProfile.cancel')}</Button>
         </DialogActions>
       </Dialog>
       <Dialog open={removePersonDialogOpen} onClose={handleCloseRemovePersonDialog}>
-        <DialogTitle>Atanan Kişiyi Sil</DialogTitle>
+        <DialogTitle>{t('productProfile.deleteAssignedPerson')}</DialogTitle>
         <DialogContent>
           {assignedPersons.map((personId) => (
             <Button key={personId} onClick={() => handleRemovePerson(personId)}>
@@ -371,21 +394,21 @@ function ProductProfile() {
           ))}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseRemovePersonDialog}>İptal</Button>
+          <Button onClick={handleCloseRemovePersonDialog}>{t('productProfile.cancel')}</Button>
         </DialogActions>
       </Dialog>
       <Dialog open={deleteConfirmationDialogOpen} onClose={handleCloseDeleteConfirmationDialog}>
-        <DialogTitle>Ürünü Sil</DialogTitle>
+        <DialogTitle>{t('productProfile.deleteProduct')}</DialogTitle>
         <DialogContent>
-          <p>Seçilen Ürünü silmek istediğinize emin misiniz?</p>
+          <p>{t('productProfile.deleteProductquestion')}</p>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteConfirmationDialog}>Hayır</Button>
-          <Button onClick={handleDeleteProduct}>Evet</Button>
+          <Button onClick={handleCloseDeleteConfirmationDialog}>{t('productProfile.no')}</Button>
+          <Button onClick={handleDeleteProduct}>{t('productProfile.yes')}</Button>
         </DialogActions>
       </Dialog>
       <Dialog open={removePersonDialogOpen} onClose={handleCloseRemovePersonDialog}>
-  <DialogTitle>Atanan Kişiyi Sil</DialogTitle>
+  <DialogTitle>{t('productProfile.deleteAssignedPerson')}</DialogTitle>
   <DialogContent>
     {assignedPersons.map((personId) => (
       <Button key={personId} onClick={() => handleConfirmPersonRemoval(personId)}>
@@ -394,9 +417,14 @@ function ProductProfile() {
     ))}
   </DialogContent>
   <DialogActions>
-    <Button onClick={handleCloseRemovePersonDialog}>İptal</Button>
+    <Button onClick={handleCloseRemovePersonDialog}>{t('productProfile.cancel')}</Button>
   </DialogActions>
 </Dialog>
+<Snackbar open={snackbarOpen} autoHideDuration={5000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

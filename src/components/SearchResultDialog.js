@@ -8,7 +8,7 @@ import Button from '@mui/material/Button';
 const SearchResultDialog = ({ open, handleClose, data }) => {
   return (
     <Dialog open={open} onClose={handleClose}>
-    <DialogTitle>Sorgu Sonuçları</DialogTitle>
+    <DialogTitle>Query Results</DialogTitle>
     <DialogContent>
         {data.map((item, index) => {
             if (item.type === 'error') {
@@ -25,7 +25,7 @@ const SearchResultDialog = ({ open, handleClose, data }) => {
     </DialogContent>
     <DialogActions>
         <Button onClick={handleClose} color="primary">
-            Kapat
+            Close
         </Button>
     </DialogActions>
 </Dialog>
