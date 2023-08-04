@@ -3,7 +3,7 @@
 This project is an inventory management application that allows you to track and manage information about people and products. It is developed using React and Firebase.
 
 ## Demo
-If you want to take a closer look at the project and explore its features, you can visit and use https://inventory.alpozk.com/.
+If you want to take a closer look at the project and explore its features, you can visit and use https://inventory.alpozk.com/
 
 - Login credentials:
 - Email: trial.inventory@alpozk.com
