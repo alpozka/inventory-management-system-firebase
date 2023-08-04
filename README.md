@@ -25,14 +25,14 @@ REACT_APP_MEASUREMENT_ID="Firebase Measurement ID"
 8. Run `npm start` to start the application.
 
 ## Features
-# Adding new people and products
-# View a list of people and products
-# Edit contact and product information
-# Deleting contact and product information
-# Ability to assign people and products to each other simultaneously
-# Searching for people with information such as name, surname and title
-# Product search with information such as product name, product code, product category
-# Printing a list of people and products.
+Adding new people and products. \
+View a list of people and products. \
+Edit contact and product information. \
+Deleting contact and product information. \
+Ability to assign people and products to each other simultaneously. \
+Searching for people with information such as name, surname and title. \
+Product search with information such as product name, product code, product category.\
+Printing a list of people and products. \
 
 
 
