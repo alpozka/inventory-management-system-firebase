@@ -32,7 +32,7 @@ Deleting contact and product information. \
 Ability to assign people and products to each other simultaneously. \
 Searching for people with information such as name, surname and title. \
 Product search with information such as product name, product code, product category.\
-Printing a list of people and products. \
+Printing a list of people and products.\
 
 
 
