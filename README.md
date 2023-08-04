@@ -5,9 +5,9 @@ This project is an inventory management application that allows you to track and
 ## Demo
 If you want to take a closer look at the project and explore its features, you can visit and use https://inventory.alpozk.com/.
 
-Login credentials:
-Email: trial.inventory@alpozk.com
-Password: inventory1*
+- Login credentials:
+- Email: trial.inventory@alpozk.com
+- Password: inventory1*
 
 Feel free to check out the website to see the project in action.
 
