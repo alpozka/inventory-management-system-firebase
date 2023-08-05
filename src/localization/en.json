@@ -24,7 +24,9 @@
       "purchaseDate": "Purchase Date",
       "price": "Price",
       "assignedPerson": "Assigned Person",
-      "unknownResultType": "Unknown result type"
+      "unknownResultType": "Unknown result type",
+      "searchChar": "Enter at least 2 characters",
+      "searchError": "No results found"
     },
     "peoplePage": {
       "print": "Print",

@@ -47,4 +47,15 @@ REACT_APP_MEASUREMENT_ID="Firebase Measurement ID"
 - Localization infrastructure is ready for developers.
 
 
+## Build
+
+1. Run `npm run build` to build the project.
+2. The build artifacts will be stored in the `build/` directory.
+3. You can add the files in the build folder to your server and use them on your server.
+
+## Note
+You might need the `.htaccess` file in the main folder for your server. It helps with directions. You can add it when you set up. If needed, you can change it or make a new one.
+
+
+
 

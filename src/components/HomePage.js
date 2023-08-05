@@ -68,11 +68,11 @@ const HomePage = () => {
 
   const handleSearch = async () => {
     if (searchId.length < 2) {
-      setError('En az 2 karakter girin');
+      setError(t);
       return;
     }
 
-    setError('');
+    setError(t('homepage.searchChar'));
     setIsLoading(true);
 
     // Create empty array to store all results
@@ -158,7 +158,7 @@ const HomePage = () => {
     }
 
     if (results.length === 0) {
-      setError('Sonuç bulunamadı');
+      setError(t('homepage.searchError'));
     } else {
       setSearchResult(results);
     }

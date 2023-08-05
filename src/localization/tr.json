@@ -24,7 +24,9 @@
       "purchaseDate": "Satın Alınma Tarihi",
       "price": "Fiyat",
       "assignedPerson": "Atanan Kişi",
-      "unknownResultType": "Bilinmeyen sonuç tipi"
+      "unknownResultType": "Bilinmeyen sonuç tipi",
+      "searchChar": "En az 2 karakter girin",
+      "searchError": "Sonuç bulunamadı"
     },
     "peoplePage": {
       "print": "Yazdır",
