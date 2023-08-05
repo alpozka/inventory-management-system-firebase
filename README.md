@@ -29,9 +29,8 @@ REACT_APP_MEASUREMENT_ID="Firebase Measurement ID"
 
 4. Activate the login with e-mail and password from the Firebse authentication section.
 5. Add a new mail and password by saying add user from the Firebase authentication section. There is no register page in the system, and accounts to be opened must be created from this page.
-6. Create a database from Firestore Firestore Database.
-7. Run `npm install` to install the required dependencies.
-8. Run `npm start` to start the application.
+6. Run `npm install` to install the required dependencies.
+7. Run `npm start` to start the application.
 
 ## Features
 
